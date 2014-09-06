@@ -17,7 +17,10 @@ class Folders(object):
                                 wx.TR_DEFAULT_STYLE
                                 )
         self.image_list = wx.ImageList(width=24, height=24)
-        self.image_list.Add(wx.Bitmap(self.frame.icon_dir+'folder.png', type=wx.BITMAP_TYPE_PNG))
+        self.image_list.Add(wx.Bitmap(
+                            self.frame.icon_dir+'folder.png',
+                            type=wx.BITMAP_TYPE_PNG)
+                        )
         self.folders_control.AssignImageList(self.image_list)
         self.path = ''
 
@@ -56,7 +59,9 @@ class Folders(object):
                 self.path = self.path + '/' + key
                 new_parent = self.folders_control.AppendItem(parent,
                                 key,
-                                image=self.folder_details.get(self.path,{}).get('icon_id', 0)
+                                image=self.folder_details.get(
+                                    self.path,{}
+                                ).get('icon_id', 0)
                             )
                 if self.folder_details.get(self.path):
                     self.folders_control.SetPyData(new_parent,
@@ -67,7 +72,9 @@ class Folders(object):
                  temp_path = self.path + '/' + key
                  child = self.folders_control.AppendItem(parent,
                             key,
-                            image=self.folder_details.get(temp_path, {}).get('icon_id', 0)
+                            image=self.folder_details.get(
+                                temp_path, {}
+                            ).get('icon_id', 0)
                         )
                  if self.folder_details.get(temp_path):
                     self.folders_control.SetPyData(child,
@@ -75,7 +82,7 @@ class Folders(object):
                                     )
         self.path = '/'.join(self.path.split('/')[:-1])
         
-    def get_folders(self):
+    def layout_folders(self):
         """
             Description: Retrievs the details of all the
                          available Folders/Groups

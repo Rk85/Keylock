@@ -1,4 +1,5 @@
 import wx
+import os
 
 class LoginDialog(wx.Dialog):
     """
@@ -33,7 +34,8 @@ class LoginDialog(wx.Dialog):
 
     def register_events(self):
         """
-            Description: Register the required events for this Window
+            Description: Register the required events for login Window
+            
         """
         self.pass_toggle_check.Bind(wx.EVT_CHECKBOX,
                                     self.change_password_text_type
@@ -45,26 +47,52 @@ class LoginDialog(wx.Dialog):
 
     def verify_credentials(self, event):
         """
+            Description: Verifies the credential given in login window
+                         and calls respective item display based on the validation
+            input_param: event - Button Click Event 
+            input_type: Event instance
+            
         """
         if event.GetId() == wx.ID_OK:
-            self.frame.master_password = self.password.GetValue() if self.password.IsShown() else self.no_password.GetValue()
-            if len(self.frame.master_password)%self.frame.block_size !=0:
-                self.frame.master_password = self.frame.master_password.zfill(len(self.frame.master_password)+len(self.frame.master_password)%self.frame.block_size)
+            if self.password.IsShown():
+                self.frame.master_password = self.password.GetValue()
+            else:
+                self.frame.master_password = self.no_password.GetValue()
+            if len(self.frame.master_password)%self.frame.block_size:
+                self.frame.master_password = self.frame.master_password.zfill(
+                        len(
+                            self.frame.master_password
+                        )+
+                        len(
+                            self.frame.master_password
+                        )%self.frame.block_size
+                    )
             try:
-                self.frame.display_existing_items()
+                if os.path.isfile(os.path.join(
+                                        self.frame.dir_name,
+                                        self.frame.file_name
+                                    )
+                                ):
+                    self.frame.item_panel.add_items_from_file()
+                else:
+                    self.frame.credential_valid = True
+                    self.frame.folder_panel.layout_folders()
+                    self.frame.item_panel.display_items()
             except ValueError as e:
-                print e
-                self.frame.folder_panel.folder_details = self.frame.folder_panel.get_default_folders()
+                folders = self.frame.folder_panel.get_default_folders()
+                self.frame.folder_panel.folder_details = folders
                 self.frame.item_panel.items = []
-                self.frame.folder_panel.get_folders()
+                self.frame.folder_panel.layout_folders()
             event.Skip()
         if event.GetId() == wx.ID_CANCEL:
-            self.frame.folder_panel.get_folders()
-            event.Skip()
+            self.frame.folder_panel.layout_folders()
+            self.frame.item_panel.display_items()
+        event.Skip()
             
     def layout_components(self):
         """
-            Description: Rebnder the components into the main Frame/Window
+            Description: Render the components into the login Frame/Window
+            
         """
         # Create the Sizer the Window
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
