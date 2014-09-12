@@ -2,6 +2,7 @@ import wx
 from file_menu import FileMenu
 #from edit_menu import EditMenu
 #from view_menu import ViewMenu
+import os
 
 VIEW_STATUS_BAR_ID = 30001
 VIEW_FONT_ID = 30002
@@ -86,7 +87,8 @@ def layout_menus(frame):
         menu = wx.Menu()
         menu_object = menu_group['call_back_class'](frame)
         setattr(frame, menu_group['frame_attribute'], menu_object)
-        create_sub_menus(menu,
+        create_sub_menus(frame,
+                         menu,
                          menu_group['sub_menus']
         )
         register_menu_call_backs(frame,
@@ -97,7 +99,9 @@ def layout_menus(frame):
         menu_bar.Append(menu, menu_group['name'])
     frame.SetMenuBar(menu_bar)
 
-def create_sub_menus(menu, sub_menu_list):
+def create_sub_menus(frame,
+                     menu,
+                     sub_menu_list):
     """
         Description: Creates all the required submenus under 
                      the given menu item 
@@ -121,7 +125,11 @@ def create_sub_menus(menu, sub_menu_list):
                           sub_menu_item['help_text'],
                           sub_menu_item.get('kind_type', wx.ITEM_NORMAL)
                         )
-            #menu_item.SetBitmap(wx.Bitmap('exit.png'))
+            if sub_menu_item.get('icon_name'):
+                menu_item.SetBitmap(wx.Image(
+                                os.path.join(frame.icon_dir, sub_menu_item['icon_name']),
+                                wx.BITMAP_TYPE_PNG
+                                ).ConvertToBitmap())
             menu.AppendItem(menu_item)
             if menu_item.IsCheckable():
                 menu_item.Check(sub_menu_item.get('kind_value', False))

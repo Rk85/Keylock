@@ -62,7 +62,8 @@ class ItemPanel(object):
         else:
             self.frame.folder_panel.folder_details[new_item['folder']] = {
                             'items' : [new_item],
-                            'icon_id': 0
+                            'icon_id': 0,
+                            'path': new_item.get('folder', '/')
             }
 
     def set_column_value(self, new_item, line):

@@ -77,8 +77,8 @@ class KeyLock(wx.Frame):
         # instantiated the window draw by resizing it
         wind1 = self.content_splitter.GetWindow1()
         wind2 = self.content_splitter.GetWindow2()
-        wind1.SetSize(wind1.GetSize()+(-1, -1))
-        wind2.SetSize(wind2.GetSize()+(-1, -1))
+        wind1.SetSize(wind1.GetSize()-(1, 1))
+        wind2.SetSize(wind2.GetSize()-(1, 1))
     
     def layout_windows(self):
         """
@@ -92,7 +92,7 @@ class KeyLock(wx.Frame):
                             )
         self.content_splitter.SetMinimumPaneSize(200)
         self.frame_splitter.SetSashGravity(1.0)
-        self.frame_splitter.SetMinimumPaneSize(20)
+        self.frame_splitter.SetMinimumPaneSize(200)
         self.frame_splitter.SplitHorizontally(self.content_splitter,
                                               self.detail_panel.details
                                               )
@@ -100,7 +100,7 @@ class KeyLock(wx.Frame):
         # Create the sizer and add our Frame/Window into that
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.tool_bar, 0, flag=wx.EXPAND|wx.LEFT|wx.RIGHT)
-        sizer.Add(self.frame_splitter, 1, flag=wx.EXPAND|wx.BOTTOM)
+        sizer.Add(self.frame_splitter, 1, flag=wx.EXPAND|wx.ALL)
         self.SetSizer(sizer)
     
     def window_close(self, event):
