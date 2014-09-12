@@ -18,7 +18,7 @@ class Folders(object):
                                 style=wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|
                                 wx.TR_DEFAULT_STYLE
                                 )
-        self.image_list = wx.ImageList(width=24, height=24)
+        self.image_list = wx.ImageList(width=22, height=22)
         self.image_list.Add(wx.Bitmap(
                             self.frame.icon_dir+self.icon_name,
                             type=wx.BITMAP_TYPE_PNG)

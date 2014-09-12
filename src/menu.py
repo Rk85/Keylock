@@ -23,7 +23,7 @@ MENUS = [
                     'display': True,
                     'name': 'New\tCtrl+N',
                     'tool_menu': True,
-                    'icon_name': 'new.png'
+                    'icon_name': 'new_file.png'
                 },
                 {
                     'id': wx.ID_OPEN,
@@ -51,7 +51,8 @@ MENUS = [
                     'call_back': 'save_as_file',
                     'display_order' : 3,
                     'display': True,
-                    'name': 'Save As\tShift+Ctrl+S'
+                    'name': 'Save As\tShift+Ctrl+S',
+                    'icon_name': 'save_as.png'
                 },
                 {},
                 {
@@ -60,7 +61,9 @@ MENUS = [
                     'call_back': 'exit_program',
                     'display_order' : 5,
                     'display': True,
-                    'name': 'Exit\tCtrl+Q'
+                    'name': 'Exit\tCtrl+Q',
+                    'icon_name': 'exit.png'
+                    
                 }
                 ],
             'display_order': 1,

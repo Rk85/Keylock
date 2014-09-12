@@ -13,6 +13,7 @@ class ItemPanel(object):
             
         """
         self.frame = frame
+        self.icon_name = 'item.png'
         self.items = []
         self.list_control = wx.ListCtrl(self.frame.content_splitter,
                                    style=wx.LC_REPORT)
@@ -32,7 +33,7 @@ class ItemPanel(object):
             
         """
         self.image_list = wx.ImageList(width=10, height=10)
-        self.image_list.Add(wx.Bitmap(self.frame.icon_dir+'new.png',
+        self.image_list.Add(wx.Bitmap(self.frame.icon_dir+self.icon_name,
                                       type=wx.BITMAP_TYPE_PNG)
                             )
         self.list_control.AssignImageList(self.image_list,
