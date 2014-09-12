@@ -1,4 +1,5 @@
 import wx
+from folder_pop_menu import FolderPopUp
 
 class Folders(object):
     """
@@ -24,7 +25,7 @@ class Folders(object):
                         )
         self.folders_control.AssignImageList(self.image_list)
         self.path = ''
-        self.pop_up_menu = None
+        self.pop_up_menu = FolderPopUp(self.frame, self)
 
         # Register the application for required events
         self.register_events()
@@ -44,7 +45,13 @@ class Folders(object):
             input_type: Event instance
             
         """
-        self.folders_control.SetFocusedItem(event.GetItem())
+        self.frame.item_panel.list_control.DeleteAllItems()
+        folder_item = event.GetItem()
+        data = self.folders_control.GetPyData(folder_item)
+        list_items = data['items']
+        self.folders_control.SetFocusedItem(folder_item)
+        self.frame.item_panel.items = list_items
+        self.frame.item_panel.display_items()
 
     def show_pop_menu(self, event):
         """
@@ -53,28 +60,9 @@ class Folders(object):
             input_param: event - Context Menu Event 
             input_type: Event instance
         """
-        if self.pop_up_menu:
-            self.pop_up_menu.Destroy()
-        self.pop_up_menu = wx.Menu()
-        menu_item = wx.MenuItem(self.pop_up_menu,
-                          wx.ID_ADD,
-                          'Add Folder',
-                          'Adds New folder',
-                          wx.ITEM_NORMAL
-                        )
-        self.pop_up_menu.AppendItem(menu_item)
-        self.frame.Bind(wx.EVT_MENU, self.show_add, menu_item)
-        menu_item = wx.MenuItem(self.pop_up_menu,
-                          wx.ID_DELETE,
-                          'Delete Folder',
-                          'Delets the folder',
-                          wx.ITEM_NORMAL
-                        )
-        self.pop_up_menu.AppendItem(menu_item)
-        self.frame.Bind(wx.EVT_MENU, self.show_del, menu_item)
-        self.folders_control.PopupMenu(self.pop_up_menu)
+        self.pop_up_menu.layout_pop_menu()
 
-    def show_add(self, event):
+    def add_new_folder(self, event):
         """
             Description: Called whenever user clicks the Add folder item in 
                             pop-up menu and and creats new folder
@@ -83,6 +71,7 @@ class Folders(object):
         """
         item = self.folders_control.GetSelection()
         data = self.folders_control.GetPyData(item)
+        # TODO: Dialog for Folder add 
         full_path = data['path'] + '/test1'
         if full_path not in self.folder_details.keys():
             self.folder_details[full_path]={
@@ -95,17 +84,42 @@ class Folders(object):
             self.add_folders_to_tree(item, folder_info)
             self.folders_control.Expand(item)
 
-    def show_del(self, event):
+    def delete_folder(self, event):
         """
             Description: Called whenever user clicks Delete folder item in 
                             pop-up menu and and Delets new folder
             input_param: event - Menu Click Event 
             input_type: Event instance
         """
+        # TODO: Confirmation dialog on delete
         item = self.folders_control.GetSelection()
         data = self.folders_control.GetPyData(item)
-        path = data['path']
-        print path
+        if data['path'] in self.folder_details.keys():
+            del self.folder_details[data['path']]
+        self.folders_control.Delete(item)
+        
+    def add_new_item(self, event):
+        """
+            Description: Called whenever user clicks the Add New item in 
+                            pop-up menu and and creats new credential item
+            input_param: event - Menu Click Event 
+            input_type: Event instance
+        """
+        folder_item = self.folders_control.GetSelection()
+        data = self.folders_control.GetPyData(folder_item)
+        list_items = data['items']
+        # TODO: Attributes Dialog for New credential item
+        new_item = {
+                'title': 'test',
+                'name': 'name',
+                'password': 'password',
+                'notes': 'notes',
+                'folder': data['path']
+            }
+        list_items.append(new_item)
+        self.frame.item_panel.items = list_items
+        self.frame.item_panel.display_items()
+        
 
     def get_default_folders(self):
         """
