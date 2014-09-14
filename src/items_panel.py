@@ -2,6 +2,8 @@ import wx
 from Crypto.Cipher import DES
 import re
 import os
+from list_pop_menu import ListItemPopUp
+import list_pop_menu
 
 class ItemPanel(object):
     """
@@ -16,7 +18,7 @@ class ItemPanel(object):
         self.icon_name = 'item.png'
         self.items = []
         self.list_control = wx.ListCtrl(self.frame.content_splitter,
-                                   style=wx.LC_REPORT)
+                                   style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
         self.list_control.InsertColumn(0, 'Title')
         self.list_control.InsertColumn(1, 'User Name')
         self.list_control.InsertColumn(2, 'Password')
@@ -27,11 +29,6 @@ class ItemPanel(object):
         self.list_control.SetColumnWidth(2, 150)
         self.list_control.SetColumnWidth(3, 420)
 
-    def display_items(self):
-        """
-            Description: Displays the list of credential items on the panel
-            
-        """
         self.image_list = wx.ImageList(width=10, height=10)
         self.image_list.Add(wx.Bitmap(self.frame.icon_dir+self.icon_name,
                                       type=wx.BITMAP_TYPE_PNG)
@@ -39,14 +36,90 @@ class ItemPanel(object):
         self.list_control.AssignImageList(self.image_list,
                                           wx.IMAGE_LIST_SMALL
                                           )
+
+        self.pop_up_menu = ListItemPopUp(self.frame, self)
         
-        for item in self.items:
+        # Register the application for required events
+        self.register_events()
+        
+    def register_events(self):
+        """
+            Description: Register the required events for this Window
+        """
+        self.list_control.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.show_pop_menu)
+
+    def copy_item(self, event):
+        """
+            Description: Called on event when the user clicks
+                            Copy menu item or corresponding Accel Key
+            input_param: event - Context Menu Event 
+            input_type: Event instance
+        """
+        item_index = self.list_control.GetFocusedItem()
+        menu_id = event.GetId()
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.Clear()
+            if menu_id == list_pop_menu.ITEM_COPY_USER:
+                wx.TheClipboard.SetData(wx.TextDataObject(self.list_control.GetItem(item_index, 1).GetText()))
+            elif menu_id == list_pop_menu.ITEM_COPY_PASS:
+                wx.TheClipboard.SetData(wx.TextDataObject(self.list_control.GetItem(item_index, 2).GetText()))
+            else:
+                event.Skip()
+            wx.TheClipboard.Close()
+    
+    def show_pop_menu(self, event):
+        """
+            Description: Called on every mouse right click event
+                            and displays the Pop-Up menu for the tree item
+            input_param: event - Context Menu Event 
+            input_type: Event instance
+        """
+        self.pop_up_menu.layout_pop_menu()
+
+    def delete_item(self, event):
+        """
+            Description: Called on event when the user click delete
+                            menu in pop or corresponding Accel Key
+            input_param: event - Context Menu Event 
+            input_type: Event instance
+        """
+        folder_item = self.frame.folder_panel.folders_control.GetFocusedItem()
+        folder_data = self.frame.folder_panel.folders_control.GetPyData(folder_item)
+        item_index = self.list_control.GetFocusedItem()
+        index = self.list_control.GetItemData(item_index)
+        self.list_control.DeleteItem(item_index)
+        del folder_data['items'][index] 
+    
+    def edit_item(self, event):
+        """
+            Description: Called on event when the user click Edit
+                            menu in pop or corresponding Accel Key
+            input_param: event - Context Menu Event 
+            input_type: Event instance
+        """
+        folder_item = self.frame.folder_panel.folders_control.GetFocusedItem()
+        folder_data = self.frame.folder_panel.folders_control.GetPyData(folder_item)
+        item_index = self.list_control.GetFocusedItem()
+        index = self.list_control.GetItemData(item_index)
+        item_data = folder_data['items'][index]
+        # Todo: Edit Dialog to enter the details
+        self.list_control.GetItem(item_index, 1).SetText('poda')
+        
+
+    def display_items(self):
+        """
+            Description: Displays the list of credential items on the panel
+            
+        """
+        self.list_control.DeleteAllItems()
+        for index, item in enumerate(self.items):
             row_id = self.list_control.GetItemCount()
             self.list_control.InsertStringItem(row_id, item['title'])
             self.list_control.SetStringItem(row_id, 1, item['name'])
             self.list_control.SetStringItem(row_id, 2, item['password'])
             self.list_control.SetStringItem(row_id, 3, item['notes'])
             self.list_control.SetItemImage(row_id, item.get('item_icon_id', 0))
+            self.list_control.SetItemData(row_id, index)
             if (row_id % 2) == 0:
                 self.list_control.SetItemBackgroundColour(row_id, '#e6f1f5')
     

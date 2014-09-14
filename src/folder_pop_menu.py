@@ -3,34 +3,37 @@ from menu import (
     create_sub_menus,
     register_menu_call_backs
 )
-
-FOLDER_ADD_ID = 14001
-FOLDER_DELETE_ID = 14002
-FOLDER_ADD_ITEM_ID = 14003
+import settings
 
 POP_UP_MENU = [
     {
-        'id': FOLDER_ADD_ID,
-        'name': 'Add Folder',
+        'id': settings.FOLDER_ADD_ID,
+        'name': '&Add Folder\tCtrl+Shift+N',
         'help_text': 'Adds New folder',
         'display': True,
-        'call_back': 'add_new_folder'
+        'call_back': 'add_new_folder',
+        'tool_menu': True,
+        'icon_name': 'add_folder.png'
         },
     {
         },
     {
-        'id': FOLDER_DELETE_ID,
-        'name': 'Delete Folder',
+        'id': settings.FOLDER_DELETE_ID,
+        'name': '&Delete Folder\tCtrl+Shift+D',
         'help_text': 'Deletes folder',
         'display': True,
-        'call_back': 'delete_folder'
+        'call_back': 'delete_folder',
+        'tool_menu': True,
+        'icon_name': 'delete_folder.png'
         },
     {
-        'id': FOLDER_ADD_ITEM_ID,
-        'name': 'New Item',
+        'id': settings.FOLDER_ADD_ITEM_ID,
+        'name': '&New Item\tCtrl+T',
         'help_text': 'New Item',
         'display': True,
-        'call_back': 'add_new_item'
+        'call_back': 'add_new_item',
+        'tool_menu': True,
+        'icon_name': 'add_item.png'
         }
     ]
 

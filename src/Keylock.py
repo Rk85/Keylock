@@ -4,6 +4,7 @@ import items_panel
 import details_panel
 import login
 import menu
+import settings
 
 class KeyLock(wx.Frame):
     """
@@ -68,6 +69,7 @@ class KeyLock(wx.Frame):
         self.SetIcon(wx.Icon(self.icon_dir + 'short_icon.ico', 
                              wx.BITMAP_TYPE_ICO)
                     )
+        self.set_key_accelarator()
         
         # Show the Main Window
         self.Show()
@@ -79,7 +81,7 @@ class KeyLock(wx.Frame):
         wind2 = self.content_splitter.GetWindow2()
         wind1.SetSize(wind1.GetSize()-(1, 1))
         wind2.SetSize(wind2.GetSize()-(1, 1))
-    
+
     def layout_windows(self):
         """
             Description: Rebnder the components into the main Frame/Window
@@ -115,6 +117,21 @@ class KeyLock(wx.Frame):
             Description: Register the required events for this Window
         """
         self.Bind(wx.EVT_CLOSE, self.window_close)
+
+    def set_key_accelarator(self):
+        """
+        """
+        accel_tbl = wx.AcceleratorTable(
+            [(wx.ACCEL_CTRL,  ord('U'), settings.ITEM_COPY_USER ),
+             (wx.ACCEL_CTRL,  ord('P'), settings.ITEM_COPY_PASS ),
+             (wx.ACCEL_CTRL,  ord('E'), settings.ITEM_EDIT_ID ),
+             (wx.ACCEL_CTRL,  ord('D'), settings.ITEM_DELETE_ID ),
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('N'), settings.FOLDER_ADD_ID ),
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('D'), settings.FOLDER_DELETE_ID ),
+             (wx.ACCEL_CTRL,  ord('T'), settings.FOLDER_ADD_ITEM_ID )
+             ]
+        )
+        self.SetAcceleratorTable(accel_tbl)
         
 if __name__ == '__main__':
     app = wx.App()

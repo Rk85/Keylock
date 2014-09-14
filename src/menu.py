@@ -21,7 +21,7 @@ MENUS = [
                     'help_text': 'Creats a DB file',
                     'call_back': 'new_file',
                     'display': True,
-                    'name': 'New\tCtrl+N',
+                    'name': '&New\tCtrl+N',
                     'tool_menu': True,
                     'icon_name': 'new_file.png'
                 },
@@ -30,7 +30,7 @@ MENUS = [
                     'help_text': 'Open a new file',
                     'call_back': 'open_file',
                     'display': True,
-                    'name': 'Open\tCtrl+O',
+                    'name': '&Open\tCtrl+O',
                     'tool_menu': True,
                     'icon_name': 'open.png'
                 },
@@ -41,7 +41,7 @@ MENUS = [
                     'call_back': 'save_file',
                     'display_order' : 2,
                     'display': True,
-                    'name': 'Save\tCtrl+S',
+                    'name': '&Save\tCtrl+S',
                     'tool_menu': True,
                     'icon_name': 'save.png'
                 },
@@ -51,7 +51,7 @@ MENUS = [
                     'call_back': 'save_as_file',
                     'display_order' : 3,
                     'display': True,
-                    'name': 'Save As\tShift+Ctrl+S',
+                    'name': '&Save As\tShift+Ctrl+S',
                     'icon_name': 'save_as.png'
                 },
                 {},
@@ -61,7 +61,7 @@ MENUS = [
                     'call_back': 'exit_program',
                     'display_order' : 5,
                     'display': True,
-                    'name': 'Exit\tCtrl+Q',
+                    'name': '&Exit\tCtrl+Q',
                     'icon_name': 'exit.png'
                     
                 }
