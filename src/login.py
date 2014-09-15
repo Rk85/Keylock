@@ -16,8 +16,9 @@ class LoginDialog(wx.Dialog):
                                           )
         # Create login Window components
         self.text = wx.StaticText(self, label="Enter Master Key: ")
-        self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD)
-        self.no_password = wx.TextCtrl(self)
+        self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD|
+                                    wx.TE_PROCESS_ENTER)
+        self.no_password = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         self.ok_button = wx.Button(self, label="OK", id=wx.ID_OK)
         self.cancel_button = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         self.pass_toggle_check = wx.CheckBox(self, label="Show Normal Text")
@@ -40,6 +41,8 @@ class LoginDialog(wx.Dialog):
         self.pass_toggle_check.Bind(wx.EVT_CHECKBOX,
                                     self.change_password_text_type
                                     )
+        self.password.Bind(wx.EVT_TEXT_ENTER, self.verify_credentials)
+        self.no_password.Bind(wx.EVT_TEXT_ENTER, self.verify_credentials)
         self.ok_button.Bind(wx.EVT_BUTTON, self.verify_credentials)
         self.cancel_button.Bind(wx.EVT_BUTTON,
                                 self.verify_credentials
@@ -53,7 +56,7 @@ class LoginDialog(wx.Dialog):
             input_type: Event instance
             
         """
-        if event.GetId() == wx.ID_OK:
+        if event.GetId() == wx.ID_OK or event.GetEventType() == wx.EVT_TEXT_ENTER.typeId:
             if self.password.IsShown():
                 self.frame.master_password = self.password.GetValue()
             else:
@@ -83,11 +86,12 @@ class LoginDialog(wx.Dialog):
                 self.frame.folder_panel.folder_details = folders
                 self.frame.item_panel.items = []
                 self.frame.folder_panel.layout_folders()
+                self.frame.credential_valid = False
+            self.Destroy()
             event.Skip()
         if event.GetId() == wx.ID_CANCEL:
             self.frame.folder_panel.layout_folders()
             self.frame.item_panel.display_items()
-        event.Skip()
             
     def layout_components(self):
         """
@@ -135,5 +139,3 @@ class LoginDialog(wx.Dialog):
             self.password.Show()
             self.no_password.Hide()
         self.Layout()
-        
-        

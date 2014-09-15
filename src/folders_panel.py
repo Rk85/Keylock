@@ -1,5 +1,6 @@
 import wx
 from folder_pop_menu import FolderPopUp
+import copy
 
 class Folders(object):
     """
@@ -48,11 +49,11 @@ class Folders(object):
         self.frame.item_panel.list_control.DeleteAllItems()
         folder_item = event.GetItem()
         data = self.folders_control.GetPyData(folder_item)
-        list_items = data['items']
-        self.folders_control.SetFocusedItem(folder_item)
-        self.frame.item_panel.items = list_items
-        self.frame.item_panel.display_items()
-
+        self.folders_control.SelectItem(folder_item)
+        if data:
+            self.frame.item_panel.items = data['items']
+            self.frame.item_panel.display_items()
+    
     def show_pop_menu(self, event):
         """
             Description: Called on every mounse right click event
@@ -61,7 +62,7 @@ class Folders(object):
             input_type: Event instance
         """
         self.pop_up_menu.layout_pop_menu()
-
+    
     def add_new_folder(self, event):
         """
             Description: Called whenever user clicks the Add folder item in 
@@ -72,18 +73,20 @@ class Folders(object):
         item = self.folders_control.GetSelection()
         data = self.folders_control.GetPyData(item)
         # TODO: Dialog for Folder add 
-        full_path = data['path'] + '/test1'
+        full_path = data['path'] + '/test1' if data else '/test1'
         if full_path not in self.folder_details.keys():
             self.folder_details[full_path]={
                 'items': [],
                 'icon_id': 0,
                 'path': full_path
             }
-            self.path = data['path']
+            self.path = data['path'] if data else ''
             folder_info = {'test1':{}}
             self.add_folders_to_tree(item, folder_info)
             self.folders_control.Expand(item)
-
+            self.frame.content_saved = False
+            self.frame.set_title(self.frame.file_name)
+    
     def delete_folder(self, event):
         """
             Description: Called whenever user clicks Delete folder item in 
@@ -97,6 +100,8 @@ class Folders(object):
         if data['path'] in self.folder_details.keys():
             del self.folder_details[data['path']]
         self.folders_control.Delete(item)
+        self.frame.content_saved = False
+        self.frame.set_title(self.frame.file_name)
         
     def add_new_item(self, event):
         """
@@ -107,20 +112,22 @@ class Folders(object):
         """
         folder_item = self.folders_control.GetSelection()
         data = self.folders_control.GetPyData(folder_item)
-        list_items = data['items']
-        # TODO: Attributes Dialog for New credential item
-        new_item = {
-                'title': 'test',
-                'name': 'name',
-                'password': 'password',
-                'notes': 'notes',
-                'folder': data['path']
-            }
-        list_items.append(new_item)
-        self.frame.item_panel.items = list_items
-        self.frame.item_panel.display_items()
-        
-
+        if data:
+            list_items = data['items']
+            # TODO: Attributes Dialog for New credential item
+            new_item = {
+                    'title': 'test',
+                    'name': 'name',
+                    'password': 'password',
+                    'notes': 'notes',
+                    'folder': data['path']
+                }
+            list_items.append(new_item)
+            self.frame.item_panel.items = list_items
+            self.frame.item_panel.display_items()
+            self.frame.content_saved = False
+            self.frame.set_title(self.frame.file_name)
+    
     def get_default_folders(self):
         """
             Description: returns the default folders to display
@@ -130,12 +137,32 @@ class Folders(object):
             return_type: dict
             
         """
+        item = {
+                'items': [],
+                'icon_id': 0,
+            }
         return {
-            '/General/Windows':{},
-            '/General/Network':{},
-            '/General/Internet':{},
-            '/General/EMail':{},
-            '/Personal/Banking':{}
+            '/General':dict(path='/General',
+                                    **copy.deepcopy(item)
+                                ),
+            '/General/Windows':dict(path='/General/Windows',
+                                    **copy.deepcopy(item)
+                                ),
+            '/General/Network':dict(path='/General/Network',
+                                    **copy.deepcopy(item)
+                                ),
+            '/General/Internet':dict(path='/General/Internet',
+                                    **copy.deepcopy(item)
+                                ),
+            '/General/EMail':dict(path='/General/EMail',
+                                    **copy.deepcopy(item)
+                                ),
+            '/Personal':dict(path='/Personal',
+                                    **copy.deepcopy(item)
+                                ),
+            '/Personal/Banking':dict(path='/Personal/Banking',
+                                    **copy.deepcopy(item)
+                                ),
         }
     
     def add_folders_to_tree(self, parent, folders_info):
@@ -197,5 +224,4 @@ class Folders(object):
         folder_details = self.folders_control.GetPyData(event.GetItem())
         self.frame.item_panel.items = folder_details['items'] if folder_details else []
         self.frame.item_panel.display_items()
-        
         

@@ -49,8 +49,9 @@ class FolderPopUp(object):
         self.frame = frame
         self.parent = parent
         self.menu = None
-
-    def layout_pop_menu(self):
+        self.layout_pop_menu(init=True)
+    
+    def layout_pop_menu(self, init=False):
         """
             Description: Renders the Folder Pop-up menu in the screen
         """
@@ -63,4 +64,5 @@ class FolderPopUp(object):
                                  POP_UP_MENU,
                                  self.parent
                                  )
-        self.parent.folders_control.PopupMenu(self.menu)
+        if not init:
+            self.parent.folders_control.PopupMenu(self.menu)

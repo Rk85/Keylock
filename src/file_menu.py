@@ -1,5 +1,6 @@
 import wx
 import os.path
+import login
 
 class FileMenu(object):
     """
@@ -49,11 +50,21 @@ class FileMenu(object):
             input_type: Event instance
 
         """
-        self.frame.file_name = "keylock.rdb"
-        self.frame.SetTitle(self.frame.file_name)
-        self.frame.content_saved = True
-        #self.frame.show_status_text(None)
+        if not self.frame.content_saved:
+            self.frame.confirm_file_save()
+        self.frame.file_name = ''
         
+        self.frame.folder_panel.folders_control.DeleteAllItems()
+        self.frame.item_panel.list_control.DeleteAllItems()
+        self.frame.folder_panel.folder_details = self.frame.folder_panel.get_default_folders()
+        self.frame.folder_panel.layout_folders()
+        self.frame.item_panel.display_items()
+        item = self.frame.folder_panel.folders_control.GetFirstVisibleItem()
+        self.frame.folder_panel.folders_control.SelectItem(item)
+        
+        self.frame.set_title(self.frame.file_name)
+        self.frame.content_saved = True
+    
     def open_file(self, event):
         """
             Description: Open the selected file
@@ -68,16 +79,13 @@ class FileMenu(object):
             }
         )
         if self.is_file_name_given():
-            with open(os.path.join(
-                                   self.frame.dir_name, self.frame.file_name), 
-                                   'r') as textfile:
-                #self.frame.control.SetValue(textfile.read())
-                pass
-        self.frame.content_saved = True
-        self.frame.SetTitle(self.frame.file_name)
-        self.frame.update_list = []
-        self.frame.redo_list = []
-        #self.frame.show_status_text(None)
+            self.frame.folder_panel.folders_control.DeleteAllItems()
+            self.frame.item_panel.list_control.DeleteAllItems()
+            password = login.LoginDialog(self.frame)
+            if password.ShowModal() == wx.ID_OK and not self.frame.credential_valid:
+                self.frame.file_name = ''
+            self.frame.content_saved = True
+        self.frame.set_title(self.frame.file_name)
     
     def save_file(self, event):
         """
@@ -86,13 +94,12 @@ class FileMenu(object):
             input_type: Event instance
             
         """
-        with open(os.path.join(
-                               self.frame.dir_name, self.frame.file_name), 
-                               'w') as textfile:
-            #textfile.write(self.frame.control.GetValue())
-            pass
-        self.frame.SetTitle(self.frame.file_name) 
-        self.frame.content_saved = True
+        if not self.frame.file_name:
+            self.save_as_file(event)
+        else:
+            self.frame.item_panel.add_items_into_file()
+            self.frame.content_saved = True
+            self.frame.set_title(self.frame.file_name) 
     
     def save_as_file(self, event):
         """
@@ -112,9 +119,9 @@ class FileMenu(object):
         )
         if self.is_file_name_given():
             self.save_file(event)
-            self.frame.SetTitle(self.frame.file_name) 
+            self.frame.set_title(self.frame.file_name) 
             self.frame.content_saved = True
-    
+       
     def exit_program(self, event):
         """
             Description: Exit from TextPad application
@@ -123,4 +130,3 @@ class FileMenu(object):
             
         """
         self.frame.Close()
-    

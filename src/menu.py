@@ -177,7 +177,7 @@ def layout_tool_bar(frame):
         input_type: frame - wx.Frame instance
         
     """
-    frame.tool_bar = wx.ToolBar(frame, 0, 
+    frame.tool_bar = frame.CreateToolBar(
                          style=wx.TB_HORIZONTAL | wx.NO_BORDER| wx.TB_NODIVIDER
     )
     frame.tool_bar.Realize()

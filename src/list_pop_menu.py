@@ -58,8 +58,9 @@ class ListItemPopUp(object):
         self.frame = frame
         self.parent = parent
         self.menu = None
-
-    def layout_pop_menu(self):
+        self.layout_pop_menu(init=True)
+    
+    def layout_pop_menu(self, init=False):
         """
             Description: Renders the Item Pop-up menu in the screen
         """
@@ -72,4 +73,5 @@ class ListItemPopUp(object):
                                  POP_UP_MENU,
                                  self.parent
                                  )
-        self.parent.list_control.PopupMenu(self.menu)
+        if not init:
+            self.parent.list_control.PopupMenu(self.menu)
