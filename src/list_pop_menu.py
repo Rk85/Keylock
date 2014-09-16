@@ -5,58 +5,16 @@ from menu import (
 )
 import settings
 
-POP_UP_MENU = [
-    {
-        'id': settings.ITEM_COPY_USER,
-        'name': '&Copy User Name\tCtrl+U',
-        'help_text': 'Copies User name into sytem buffer',
-        'display': True,
-        'call_back': 'copy_item',
-        'tool_menu': True,
-        'icon_name': 'copy_user.png'
-        },
-    {
-        'id': settings.ITEM_COPY_PASS,
-        'name': '&Copy Password\tCtrl+P',
-        'help_text': 'Copies Password into sytem buffer',
-        'display': True,
-        'call_back': 'copy_item',
-        'tool_menu': True,
-        'icon_name': 'copy_pass.png'
-        },
-    {
-        },
-    {
-        'id': settings.ITEM_EDIT_ID,
-        'name': '&Edit Item\tCtrl+E',
-        'help_text': 'Edits Current Item',
-        'display': True,
-        'call_back': 'edit_item',
-        'tool_menu': True,
-        'icon_name': 'edit_pass.png'
-        },
-    {
-        'id': settings.ITEM_DELETE_ID,
-        'name': '&Delete Item\tCtrl+D',
-        'help_text': 'Delete Current Item',
-        'display': True,
-        'call_back': 'delete_item',
-        'tool_menu': True,
-        'icon_name': 'delete_pass.png'
-        }
-    ]
-
 class ListItemPopUp(object):
     """
         Description: Contains details of Item PopUp Menu Details
     """
-    def __init__(self, frame, parent):
+    def __init__(self, frame):
         """
             Description: Initialize the Folders Display class
             
         """
         self.frame = frame
-        self.parent = parent
         self.menu = None
         self.layout_pop_menu(init=True)
     
@@ -67,11 +25,14 @@ class ListItemPopUp(object):
         if self.menu:
             self.menu.Destroy()
         self.menu = wx.Menu()
-        create_sub_menus(self.frame, self.menu, POP_UP_MENU)
+        create_sub_menus(self.frame, self.menu, settings.ITEM_POP_UP_MENU[0]['sub_menus'])
         register_menu_call_backs(self.frame,
                                  self.menu.GetMenuItems(),
-                                 POP_UP_MENU,
-                                 self.parent
+                                 settings.ITEM_POP_UP_MENU[0]['sub_menus'],
+                                 getattr(self.frame, 
+                                       settings.ITEM_POP_UP_MENU[0]['frame_attribute'], 
+                                       None
+                                     )
                                  )
         if not init:
-            self.parent.list_control.PopupMenu(self.menu)
+            self.frame.item_panel.list_control.PopupMenu(self.menu)

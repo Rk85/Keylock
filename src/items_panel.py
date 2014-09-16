@@ -29,11 +29,8 @@ class ItemPanel(object):
                                           wx.IMAGE_LIST_SMALL
                                           )
 
-        self.pop_up_menu = ListItemPopUp(self.frame, self)
-        
-        # Register the application for required events
-        self.register_events()
-
+        self.pop_up_menu = ListItemPopUp(self.frame)
+    
     def set_columns(self):
         """
             Description: Sets the column name for list panel
@@ -50,9 +47,11 @@ class ItemPanel(object):
         """
             Description: Register the required events for this Window
         """
+        self.list_window = self.frame.content_splitter.GetWindow2()
         self.list_control.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.show_pop_menu)
         self.list_control.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_details)
         self.list_control.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.show_details)
+        self.list_window.Bind(wx.EVT_KILL_FOCUS, self.show_details)
 
     def show_details(self, event):
         """
@@ -62,7 +61,7 @@ class ItemPanel(object):
             input_type: Event instance
         """
         self.frame.detail_panel.show_details(event)
-    
+
     def copy_item(self, event):
         """
             Description: Called on event when the user clicks

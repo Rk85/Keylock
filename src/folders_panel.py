@@ -26,10 +26,7 @@ class Folders(object):
                         )
         self.folders_control.AssignImageList(self.image_list)
         self.path = ''
-        self.pop_up_menu = FolderPopUp(self.frame, self)
-
-        # Register the application for required events
-        self.register_events()
+        self.pop_up_menu = FolderPopUp(self.frame)
 
     def register_events(self):
         """

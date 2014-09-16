@@ -141,6 +141,8 @@ class KeyLock(wx.Frame):
             Description: Register the required events for this Window
         """
         self.Bind(wx.EVT_CLOSE, self.window_close)
+        self.folder_panel.register_events()
+        self.item_panel.register_events()
     
     def set_key_accelarator(self):
         """

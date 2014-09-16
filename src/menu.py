@@ -1,75 +1,8 @@
 import wx
-from file_menu import FileMenu
 #from edit_menu import EditMenu
 #from view_menu import ViewMenu
 import os
-
-VIEW_STATUS_BAR_ID = 30001
-VIEW_FONT_ID = 30002
-VIEW_ABOUT_ID = 30003
-VIEW_TOOL_BAR_ID = 30004
-
-# menu list for the textpad
-MENUS = [
-        {
-            'name': 'File',
-            'call_back_class': FileMenu,
-            'frame_attribute': 'file_menu', # this is an attribute in TextPad 
-            'sub_menus': [
-                {
-                    'id': wx.ID_NEW,
-                    'help_text': 'Creats a DB file',
-                    'call_back': 'new_file',
-                    'display': True,
-                    'name': '&New\tCtrl+N',
-                    'tool_menu': True,
-                    'icon_name': 'new_file.png'
-                },
-                {
-                    'id': wx.ID_OPEN,
-                    'help_text': 'Open a new file',
-                    'call_back': 'open_file',
-                    'display': True,
-                    'name': '&Open\tCtrl+O',
-                    'tool_menu': True,
-                    'icon_name': 'open.png'
-                },
-                {},
-                {
-                    'id': wx.ID_SAVE,
-                    'help_text': 'Save the current file',
-                    'call_back': 'save_file',
-                    'display_order' : 2,
-                    'display': True,
-                    'name': '&Save\tCtrl+S',
-                    'tool_menu': True,
-                    'icon_name': 'save.png'
-                },
-                {
-                    'id': wx.ID_SAVEAS,
-                    'help_text': 'Save the file under a different name',
-                    'call_back': 'save_as_file',
-                    'display_order' : 3,
-                    'display': True,
-                    'name': '&Save As\tShift+Ctrl+S',
-                    'icon_name': 'save_as.png'
-                },
-                {},
-                {
-                    'id': wx.ID_EXIT,
-                    'help_text': 'Terminate the program',
-                    'call_back': 'exit_program',
-                    'display_order' : 5,
-                    'display': True,
-                    'name': '&Exit\tCtrl+Q',
-                    'icon_name': 'exit.png'
-                    
-                }
-                ],
-            'display_order': 1,
-            'display': True
-        }
-]
+import settings
 
 def layout_menus(frame):
     """
@@ -82,7 +15,7 @@ def layout_menus(frame):
     menu_bar = wx.MenuBar()
     # traverse through the sorted list of menus
     for menu_group in sorted(
-                  MENUS, key=lambda x: x['display_order']
+                  settings.MENUS, key=lambda x: x['display_order']
                  ):
         # Create the menu Item and its instance 
         # and assigns the menu instance to one of the
@@ -177,9 +110,33 @@ def layout_tool_bar(frame):
         input_type: frame - wx.Frame instance
         
     """
-    frame.tool_bar = frame.CreateToolBar(
-                         style=wx.TB_HORIZONTAL | wx.NO_BORDER| wx.TB_NODIVIDER
-    )
+    frame.tool_bar = frame.CreateToolBar()
+    tool_bar_menus = settings.MENUS + \
+                    settings.FOLDER_POP_UP_MENU + \
+                    settings.ITEM_POP_UP_MENU
+    for menu_group in sorted(
+                  tool_bar_menus, key=lambda x: x['display_order']
+                 ):
+        handler_instance = getattr(frame, 
+                                   menu_group['frame_attribute'], 
+                                   None
+                           )
+        if handler_instance:
+            for sub_menu in menu_group.get('sub_menus', []):
+                if sub_menu.get('tool_menu'):
+                    frame.tool_bar.AddSimpleTool(sub_menu['id'],
+                                       wx.Bitmap(frame.icon_dir + sub_menu['icon_name'], 
+                                                   wx.BITMAP_TYPE_PNG),
+                                                 sub_menu['name'],)
+                    frame.Bind(wx.EVT_TOOL, 
+                               getattr(handler_instance, 
+                                        sub_menu['call_back'], 
+                                        None),
+                               id=sub_menu['id'])
+        frame.tool_bar.AddSeparator()
+    for sub_menu in settings.ITEM_POP_UP_MENU[0]['sub_menus']:
+        if sub_menu:
+            frame.tool_bar.EnableTool(sub_menu['id'], False)
     frame.tool_bar.Realize()
     
    
