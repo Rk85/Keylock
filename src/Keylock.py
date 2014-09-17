@@ -38,7 +38,6 @@ class KeyLock(wx.Frame):
         # Instance for menu items
         self.too_bar = None
         self.file_menu = None
-        self.edit_menu = None
         self.view_menu = None
 
         # Instance for each panel/windows

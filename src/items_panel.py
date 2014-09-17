@@ -18,6 +18,8 @@ class ItemPanel(object):
         self.frame = frame
         self.icon_name = 'item.png'
         self.items = []
+        self.show_name = False
+        self.show_pass = False
         self.list_control = wx.ListCtrl(self.frame.content_splitter,
                                    style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
         self.set_columns()
@@ -52,6 +54,7 @@ class ItemPanel(object):
         self.list_control.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_details)
         self.list_control.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.show_details)
         self.list_window.Bind(wx.EVT_KILL_FOCUS, self.show_details)
+        self.list_window.Bind(wx.EVT_SET_FOCUS, self.show_details)
 
     def show_details(self, event):
         """
@@ -61,6 +64,7 @@ class ItemPanel(object):
             input_type: Event instance
         """
         self.frame.detail_panel.show_details(event)
+        event.Skip()
 
     def copy_item(self, event):
         """
@@ -69,14 +73,15 @@ class ItemPanel(object):
             input_param: event - Context Menu Event 
             input_type: Event instance
         """
-        item_index = self.list_control.GetFocusedItem()
+        item_data = self.get_item_details()
         menu_id = event.GetId()
-        if wx.TheClipboard.Open() and item_index != -1:
+        print 'copy'
+        if wx.TheClipboard.Open() and item_data:
             wx.TheClipboard.Clear()
             if menu_id == settings.ITEM_COPY_USER:
-                wx.TheClipboard.SetData(wx.TextDataObject(self.list_control.GetItem(item_index, 1).GetText()))
+                wx.TheClipboard.SetData(wx.TextDataObject(item_data['name']))
             elif menu_id == settings.ITEM_COPY_PASS:
-                wx.TheClipboard.SetData(wx.TextDataObject(self.list_control.GetItem(item_index, 2).GetText()))
+                wx.TheClipboard.SetData(wx.TextDataObject(item_data['password']))
             else:
                 event.Skip()
             wx.TheClipboard.Close()
@@ -89,6 +94,24 @@ class ItemPanel(object):
             input_type: Event instance
         """
         self.pop_up_menu.layout_pop_menu()
+
+    def get_item_details(self):
+        """
+            Description: Gets the Selected Item's dictionary detail
+
+            return_param: item_data - Details of the currently selected item
+            return_type: dict
+            
+        """
+        item_data = {}
+        folder_item = self.frame.folder_panel.folders_control.GetFocusedItem()
+        folder_data = self.frame.folder_panel.folders_control.GetPyData(folder_item)
+        item_count = self.frame.item_panel.list_control.GetSelectedItemCount()
+        if item_count:
+            item_index = self.frame.item_panel.list_control.GetFocusedItem()
+            index = self.frame.item_panel.list_control.GetItemData(item_index)
+            item_data = folder_data['items'][index]
+        return item_data
     
     def delete_item(self, event):
         """
@@ -134,8 +157,14 @@ class ItemPanel(object):
         for index, item in enumerate(self.items):
             row_id = self.list_control.GetItemCount()
             self.list_control.InsertStringItem(row_id, item['title'])
-            self.list_control.SetStringItem(row_id, 1, item['name'])
-            self.list_control.SetStringItem(row_id, 2, item['password'])
+            if self.show_name:
+                self.list_control.SetStringItem(row_id, 1, item['name'])
+            else:
+                self.list_control.SetStringItem(row_id, 1, '*'*len(item['name']))
+            if self.show_pass:
+                self.list_control.SetStringItem(row_id, 2, item['password'])
+            else:
+                self.list_control.SetStringItem(row_id, 2, '*'*len(item['password']))
             self.list_control.SetItemImage(row_id, int(item.get('item_icon_id', 0)))
             self.list_control.SetItemData(row_id, index)
             if (row_id % 2) == 0:

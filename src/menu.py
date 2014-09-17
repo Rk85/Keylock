@@ -21,17 +21,18 @@ def layout_menus(frame):
         # and assigns the menu instance to one of the
         # Frame class(Textpad) attribute
         menu = wx.Menu()
-        menu_object = menu_group['call_back_class'](frame)
-        setattr(frame, menu_group['frame_attribute'], menu_object)
         create_sub_menus(frame,
                          menu,
                          menu_group['sub_menus']
         )
-        register_menu_call_backs(frame,
+        if menu_group.get('call_back_class'):
+            menu_object = menu_group['call_back_class'](frame)
+            setattr(frame, menu_group['frame_attribute'], menu_object)
+            register_menu_call_backs(frame,
                               menu.GetMenuItems(),
                               menu_group['sub_menus'],
                               menu_object
-        ) 
+            ) 
         menu_bar.Append(menu, menu_group['name'])
     frame.SetMenuBar(menu_bar)
 
@@ -69,6 +70,7 @@ def create_sub_menus(frame,
             menu.AppendItem(menu_item)
             if menu_item.IsCheckable():
                 menu_item.Check(sub_menu_item.get('kind_value', False))
+            menu_item.Enable(sub_menu_item.get('enable', True))
 
 def register_menu_call_backs(frame,
                              menu_items,
@@ -111,9 +113,9 @@ def layout_tool_bar(frame):
         
     """
     frame.tool_bar = frame.CreateToolBar()
-    tool_bar_menus = settings.MENUS + \
-                    settings.FOLDER_POP_UP_MENU + \
-                    settings.ITEM_POP_UP_MENU
+    tool_bar_menus = [settings.MENUS[0]] + [
+                     settings.FOLDER_POP_UP_MENU] + [
+                     settings.ITEM_POP_UP_MENU]
     for menu_group in sorted(
                   tool_bar_menus, key=lambda x: x['display_order']
                  ):
@@ -134,7 +136,7 @@ def layout_tool_bar(frame):
                                         None),
                                id=sub_menu['id'])
         frame.tool_bar.AddSeparator()
-    for sub_menu in settings.ITEM_POP_UP_MENU[0]['sub_menus']:
+    for sub_menu in settings.ITEM_POP_UP_MENU['sub_menus']:
         if sub_menu:
             frame.tool_bar.EnableTool(sub_menu['id'], False)
     frame.tool_bar.Realize()

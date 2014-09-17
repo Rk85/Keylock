@@ -25,12 +25,17 @@ class ListItemPopUp(object):
         if self.menu:
             self.menu.Destroy()
         self.menu = wx.Menu()
-        create_sub_menus(self.frame, self.menu, settings.ITEM_POP_UP_MENU[0]['sub_menus'])
+        # Since in the default menu details
+        # the item details are ot enabled, the created menu items
+        # will be in disabled mode. So need to enable it explicitly
+        create_sub_menus(self.frame, self.menu, settings.ITEM_POP_UP_MENU['sub_menus'])
+        for menu_item in self.menu.GetMenuItems():
+            menu_item.Enable(True)
         register_menu_call_backs(self.frame,
                                  self.menu.GetMenuItems(),
-                                 settings.ITEM_POP_UP_MENU[0]['sub_menus'],
+                                 settings.ITEM_POP_UP_MENU['sub_menus'],
                                  getattr(self.frame, 
-                                       settings.ITEM_POP_UP_MENU[0]['frame_attribute'], 
+                                       settings.ITEM_POP_UP_MENU['frame_attribute'], 
                                        None
                                      )
                                  )

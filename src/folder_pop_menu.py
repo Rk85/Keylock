@@ -25,12 +25,12 @@ class FolderPopUp(object):
         if self.menu:
             self.menu.Destroy()
         self.menu = wx.Menu()
-        create_sub_menus(self.frame, self.menu, settings.FOLDER_POP_UP_MENU[0]['sub_menus'])
+        create_sub_menus(self.frame, self.menu, settings.FOLDER_POP_UP_MENU['sub_menus'])
         register_menu_call_backs(self.frame,
                                  self.menu.GetMenuItems(),
-                                 settings.FOLDER_POP_UP_MENU,
+                                 settings.FOLDER_POP_UP_MENU['sub_menus'],
                                  getattr(self.frame, 
-                                       settings.FOLDER_POP_UP_MENU[0]['frame_attribute'], 
+                                       settings.FOLDER_POP_UP_MENU['frame_attribute'], 
                                        None
                                      )
                                  )

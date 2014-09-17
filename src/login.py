@@ -92,6 +92,8 @@ class LoginDialog(wx.Dialog):
         if event.GetId() == wx.ID_CANCEL:
             self.frame.folder_panel.layout_folders()
             self.frame.item_panel.display_items()
+            self.Destroy()
+            event.Skip()
             
     def layout_components(self):
         """
