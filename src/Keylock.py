@@ -28,6 +28,7 @@ class KeyLock(wx.Frame):
         self.file_name = ''
         self.content_saved = True
         self.icon_dir = 'icons/'
+        self.expiry = 30000
  
         # Split the main window into many sub-windows
         self.frame_splitter = wx.SplitterWindow(self, -1,

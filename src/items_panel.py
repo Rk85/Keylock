@@ -5,6 +5,7 @@ import os
 from list_pop_menu import ListItemPopUp
 import list_pop_menu
 import settings
+from clip_board_timer import ClipTimer
 
 class ItemPanel(object):
     """
@@ -84,6 +85,8 @@ class ItemPanel(object):
             else:
                 event.Skip()
             wx.TheClipboard.Close()
+            self.timer = ClipTimer()
+            self.timer.Start(self.frame.expiry, oneShot=True)
     
     def show_pop_menu(self, event):
         """
