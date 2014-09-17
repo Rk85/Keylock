@@ -1,5 +1,5 @@
 import wx
-from Crypto.Cipher import DES
+from Crypto.Cipher import AES
 import re
 import os
 from list_pop_menu import ListItemPopUp
@@ -75,7 +75,6 @@ class ItemPanel(object):
         """
         item_data = self.get_item_details()
         menu_id = event.GetId()
-        print 'copy'
         if wx.TheClipboard.Open() and item_data:
             wx.TheClipboard.Clear()
             if menu_id == settings.ITEM_COPY_USER:
@@ -230,8 +229,10 @@ class ItemPanel(object):
         new_item = {}
         with open(os.path.join(self.frame.dir_name, self.frame.file_name), 'rb') as pass_file:
             if ecrypted_file:
-               des_obj=DES.new(self.frame.master_password, DES.MODE_ECB)
-               file_content = des_obj.decrypt(pass_file.read())
+               aes_obj=AES.new(self.frame.master_password,
+                               self.frame.mode,
+                               IV=self.frame.iv)
+               file_content = aes_obj.decrypt(pass_file.read())
                file_lines = re.split('\r\n|\n', file_content)
                self.frame.credential_valid = file_lines[0][:6]=='RKLOCK'
             else:
@@ -274,16 +275,18 @@ class ItemPanel(object):
                     file_content = file_content + 'Group: ' + folder + '\r\n\r\n'
 
             if len(file_content)%self.frame.block_size != 0:
-                padding = ''.zfill(
-                             self.frame.block_size-len(file_content)%self.frame.block_size
-                        )
+                total_cont_len = len(file_content) + len(secret_key)
+                padding_len = self.frame.block_size-padding_len
+                padding_len = padding_len - 2
+                padding = ''.zfill(padding_len)
                 secret_key = secret_key + padding
             secret_key = secret_key + '\r\n'
             if encrypted_file and self.frame.master_password and file_content:
-                des_obj=DES.new(self.frame.master_password, DES.MODE_ECB)
+                aes_obj=AES.new(self.frame.master_password,
+                               self.frame.mode,
+                               IV=self.frame.iv)
                 with open(os.path.join(self.frame.dir_name, self.frame.file_name), 'wb') as pass_file:
                     total_contet = secret_key+file_content
-                    pass_file.write(des_obj.encrypt(total_contet))
-            event.Skip()
+                    pass_file.write(aes_obj.encrypt(total_contet))
         except Exception as e:
             pass

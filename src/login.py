@@ -15,14 +15,16 @@ class LoginDialog(wx.Dialog):
                                           size=(300, 150)
                                           )
         # Create login Window components
+        self.frame = frame
         self.text = wx.StaticText(self, label="Enter Master Key: ")
         self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD|
                                     wx.TE_PROCESS_ENTER)
         self.no_password = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
+        self.password.SetMaxLength(self.frame.block_size)
+        self.no_password.SetMaxLength(self.frame.block_size)
         self.ok_button = wx.Button(self, label="OK", id=wx.ID_OK)
         self.cancel_button = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         self.pass_toggle_check = wx.CheckBox(self, label="Show Normal Text")
-        self.frame = frame
 
         # Display the components
         self.layout_components()
@@ -63,12 +65,9 @@ class LoginDialog(wx.Dialog):
                 self.frame.master_password = self.no_password.GetValue()
             if len(self.frame.master_password)%self.frame.block_size:
                 self.frame.master_password = self.frame.master_password.zfill(
-                        len(
-                            self.frame.master_password
-                        )+
-                        len(
-                            self.frame.master_password
-                        )%self.frame.block_size
+                        len(self.frame.master_password)\
+                        +
+                        (self.frame.block_size - len(self.frame.master_password))
                     )
             try:
                 if os.path.isfile(os.path.join(

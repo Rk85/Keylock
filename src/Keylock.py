@@ -5,6 +5,7 @@ import details_panel
 import login
 import menu
 import settings
+from Crypto.Cipher import AES
 
 class KeyLock(wx.Frame):
     """
@@ -20,7 +21,9 @@ class KeyLock(wx.Frame):
         # variables
         self.credential_valid = False
         self.master_password = ''
-        self.block_size = 8
+        self.block_size = 32
+        self.iv = 16 * '\x00'
+        self.mode = AES.MODE_CBC
         self.dir_name = '.'
         self.file_name = ''
         self.content_saved = True
