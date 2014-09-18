@@ -31,9 +31,9 @@ class ItemDetailsPanel(wx.Panel):
         elif event.GetEventType() == wx.EVT_LIST_ITEM_DESELECTED.typeId:
             self.details.SetValue('')
             self.enable = False
-        self.set_menu_state(self.enable)
+        self.set_menu_state()
             
-    def set_menu_state(self, enable=True):
+    def set_menu_state(self):
         """
             Description: Sets the ToolBar menus and Edit Menu enable/disabled
                         based on the given input
@@ -41,6 +41,6 @@ class ItemDetailsPanel(wx.Panel):
         menu_bar = self.frame.GetMenuBar() 
         for sub_menu in settings.ITEM_POP_UP_MENU['sub_menus']:
             if sub_menu.get('id'):
-                menu_bar.FindItemById(sub_menu['id']).Enable(enable)
+                menu_bar.FindItemById(sub_menu['id']).Enable(self.enable)
                 if self.frame.tool_bar:
-                    self.frame.tool_bar.EnableTool(sub_menu['id'], enable)
+                    self.frame.tool_bar.EnableTool(sub_menu['id'], self.enable)

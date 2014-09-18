@@ -28,7 +28,8 @@ class ViewMenu(object):
             menu.layout_tool_bar(self.frame)
             item_index = self.frame.item_panel.list_control.GetSelectedItemCount()
             if item_index:
-                self.frame.detail_panel.set_menu_state(True)
+                self.frame.detail_panel.enable = True
+                self.frame.detail_panel.set_menu_state()
             self.frame.Layout()
     
     def view_status_bar(self, event):

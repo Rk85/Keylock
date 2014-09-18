@@ -16,7 +16,7 @@ class Folders(object):
         self.folder_details = self.get_default_folders()
         self.folders_control = wx.TreeCtrl(self.frame.content_splitter,
                                 -1,
-                                style=wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|
+                                style=wx.TR_HAS_BUTTONS|
                                 wx.TR_DEFAULT_STYLE
                                 )
         self.image_list = wx.ImageList(width=22, height=22)
@@ -34,6 +34,7 @@ class Folders(object):
         """
         self.folders_control.Bind(wx.EVT_CONTEXT_MENU, self.show_pop_menu)
         self.folders_control.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.setSelect)
+        self.folders_control.Bind(wx.EVT_TREE_SEL_CHANGED, self.folder_changed)
 
     def setSelect(self, event):
         """
@@ -50,6 +51,7 @@ class Folders(object):
         if data:
             self.frame.item_panel.items = data['items']
             self.frame.item_panel.display_items()
+            self.pop_up_menu.layout_pop_menu()
     
     def show_pop_menu(self, event):
         """
@@ -93,12 +95,13 @@ class Folders(object):
         """
         # TODO: Confirmation dialog on delete
         item = self.folders_control.GetSelection()
+        root_item = self.folders_control.GetRootItem()
         data = self.folders_control.GetPyData(item)
-        if data['path'] in self.folder_details.keys():
+        if item != root_item and data['path'] in self.folder_details.keys():
             del self.folder_details[data['path']]
-        self.folders_control.Delete(item)
-        self.frame.content_saved = False
-        self.frame.set_title(self.frame.file_name)
+            self.folders_control.Delete(item)
+            self.frame.content_saved = False
+            self.frame.set_title(self.frame.file_name)
         
     def add_new_item(self, event):
         """
@@ -205,10 +208,6 @@ class Folders(object):
                     temp_value = temp_value.setdefault(directory, {})
         root = self.folders_control.AddRoot('Folders')
         self.add_folders_to_tree(root, folders_info)
-            
-        self.folders_control.Bind(wx.EVT_TREE_SEL_CHANGED,
-                                  self.folder_changed
-                                  )
         
     def folder_changed(self, event):
         """

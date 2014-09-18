@@ -6,6 +6,7 @@ from list_pop_menu import ListItemPopUp
 import list_pop_menu
 import settings
 from clip_board_timer import ClipTimer
+import settings
 
 class ItemPanel(object):
     """
@@ -131,6 +132,9 @@ class ItemPanel(object):
             del folder_data['items'][index]
             self.frame.content_saved = False
             self.frame.set_title(self.frame.file_name)
+            self.frame.detail_panel.details.SetValue('')
+            self.frame.detail_panel.enable = False
+            self.frame.detail_panel.set_menu_state()
     
     def edit_item(self, event):
         """

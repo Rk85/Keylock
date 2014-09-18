@@ -40,4 +40,6 @@ class ListItemPopUp(object):
                                      )
                                  )
         if not init:
-            self.frame.item_panel.list_control.PopupMenu(self.menu)
+            item_count = self.frame.item_panel.list_control.GetSelectedItemCount()
+            if item_count:
+                self.frame.item_panel.list_control.PopupMenu(self.menu)
