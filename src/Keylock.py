@@ -23,7 +23,7 @@ class KeyLock(wx.Frame):
         self.master_password = ''
         self.block_size = 32
         self.iv = 16 * '\x00'
-        self.mode = AES.MODE_CBC
+        self.mode = AES.MODE_CFB
         self.dir_name = '.'
         self.file_name = ''
         self.content_saved = True

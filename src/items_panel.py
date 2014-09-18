@@ -245,15 +245,15 @@ class ItemPanel(object):
             else:
                 file_content = pass_file.read()
                 file_lines = re.split('\r\n|\n', file_content)
-            if self.frame.credential_valid:
-                self.frame.folder_panel.folder_details = {}
-                for line in file_lines[1:]:
-                    line = line.strip('\r\n|\n').strip()
-                    if not line and new_item:
-                        self.assign_new_item_to_folder(new_item)
-                        new_item = {}
-                    elif line:
-                        self.set_column_value(new_item, line)
+        if self.frame.credential_valid:
+           self.frame.folder_panel.folder_details = {}
+           for line in file_lines[1:]:
+               line = line.strip('\r\n|\n').strip()
+               if not line and new_item:
+                   self.assign_new_item_to_folder(new_item)
+                   new_item = {}
+               elif line:
+                   self.set_column_value(new_item, line)
         self.frame.folder_panel.layout_folders()
         self.display_items()
 
@@ -281,12 +281,6 @@ class ItemPanel(object):
                 else:
                     file_content = file_content + 'Group: ' + folder + '\r\n\r\n'
 
-            if len(file_content)%self.frame.block_size != 0:
-                total_cont_len = len(file_content) + len(secret_key)
-                padding_len = self.frame.block_size-padding_len
-                padding_len = padding_len - 2
-                padding = ''.zfill(padding_len)
-                secret_key = secret_key + padding
             secret_key = secret_key + '\r\n'
             if encrypted_file and self.frame.master_password and file_content:
                 aes_obj=AES.new(self.frame.master_password,
@@ -296,4 +290,5 @@ class ItemPanel(object):
                     total_contet = secret_key+file_content
                     pass_file.write(aes_obj.encrypt(total_contet))
         except Exception as e:
+            print e
             pass
