@@ -30,6 +30,13 @@ class ViewMenu(object):
             if item_index:
                 self.frame.detail_panel.enable = True
                 self.frame.detail_panel.set_menu_state()
+            root_item = self.frame.folder_panel.folders_control.GetRootItem()
+            select_item = self.frame.folder_panel.folders_control.GetFocusedItem()
+            if root_item == select_item:
+                self.frame.folder_panel.enable = False
+            else:
+                self.frame.folder_panel.enable = True
+            self.frame.folder_panel.set_menu_state()
             self.frame.Layout()
     
     def view_status_bar(self, event):

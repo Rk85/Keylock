@@ -1,6 +1,7 @@
 import wx
 from folder_pop_menu import FolderPopUp
 import copy
+import settings
 
 class Folders(object):
     """
@@ -27,15 +28,17 @@ class Folders(object):
         self.folders_control.AssignImageList(self.image_list)
         self.path = ''
         self.pop_up_menu = FolderPopUp(self.frame)
+        self.root_disable_pop_up_item = [ settings.FOLDER_DELETE_ID,
+                                     settings.FOLDER_ADD_ITEM_ID
+                                    ]
 
     def register_events(self):
         """
             Description: Register the required events for this Window
         """
-        self.folders_control.Bind(wx.EVT_CONTEXT_MENU, self.show_pop_menu)
         self.folders_control.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.setSelect)
         self.folders_control.Bind(wx.EVT_TREE_SEL_CHANGED, self.folder_changed)
-
+    
     def setSelect(self, event):
         """
             Description: Called on every mounse right click event
@@ -44,24 +47,10 @@ class Folders(object):
             input_type: Event instance
             
         """
-        self.frame.item_panel.list_control.DeleteAllItems()
-        folder_item = event.GetItem()
-        data = self.folders_control.GetPyData(folder_item)
-        self.folders_control.SelectItem(folder_item)
-        if data:
-            self.frame.item_panel.items = data['items']
-            self.frame.item_panel.display_items()
-            self.pop_up_menu.layout_pop_menu()
-    
-    def show_pop_menu(self, event):
-        """
-            Description: Called on every mounse right click event
-                            and displays the Pop-Up menu for the tree item
-            input_param: event - Context Menu Event 
-            input_type: Event instance
-        """
+        item = event.GetItem()
+        self.folders_control.SelectItem(item)
         self.pop_up_menu.layout_pop_menu()
-    
+     
     def add_new_folder(self, event):
         """
             Description: Called whenever user clicks the Add folder item in 
@@ -206,7 +195,11 @@ class Folders(object):
             for directory in item.split('/'):
                 if directory:
                     temp_value = temp_value.setdefault(directory, {})
-        root = self.folders_control.AddRoot('Folders')
+        root = self.folders_control.AddRoot('Folders',
+                                            image=self.folder_details.get(
+                                                self.path,{}
+                                            ).get('icon_id', 0)
+                                        )
         self.add_folders_to_tree(root, folders_info)
         
     def folder_changed(self, event):
@@ -216,8 +209,27 @@ class Folders(object):
             input_type: Event instance
 
         """
+        item = event.GetItem()
         self.frame.item_panel.list_control.DeleteAllItems()
-        folder_details = self.folders_control.GetPyData(event.GetItem())
+        folder_details = self.folders_control.GetPyData(item)
         self.frame.item_panel.items = folder_details['items'] if folder_details else []
         self.frame.item_panel.display_items()
+        root_item = self.folders_control.GetRootItem()
+        if root_item == item:
+            self.enable = False
+        else:
+            self.enable = True
+        self.set_menu_state()
         
+    def set_menu_state(self):
+        """
+            Description: Sets the ToolBar menus and Folder Menu enable/disabled
+                        based on the selected folder
+        """
+        menu_bar = self.frame.GetMenuBar()
+        for menu_id in self.root_disable_pop_up_item:
+            menu_bar.FindItemById(menu_id).Enable(self.enable)
+            if self.frame.tool_bar:
+                self.frame.tool_bar.EnableTool(menu_id, self.enable)
+            if self.pop_up_menu.menu:
+                self.pop_up_menu.menu.FindItemById(menu_id).Enable(self.enable)

@@ -1,6 +1,4 @@
 import wx
-#from edit_menu import EditMenu
-#from view_menu import ViewMenu
 import os
 import settings
 
