@@ -27,6 +27,6 @@ To compile the source code you must have the following package installed in your
 Once you have the above mentioned module, you can start the 
 appliation with following commands.
 	* cd Keylock
-       * python Keylock.py
+	* python Keylock.py
 </p></pre>
 
