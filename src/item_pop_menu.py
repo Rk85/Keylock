@@ -15,22 +15,8 @@ class ListItemPopUp(object):
             
         """
         self.frame = frame
-        self.menu = None
-        self.layout_pop_menu(init=True)
-    
-    def layout_pop_menu(self, init=False):
-        """
-            Description: Renders the Item Pop-up menu in the screen
-        """
-        if self.menu:
-            self.menu.Destroy()
         self.menu = wx.Menu()
-        # Since in the default menu details
-        # the item details are ot enabled, the created menu items
-        # will be in disabled mode. So need to enable it explicitly
         create_sub_menus(self.frame, self.menu, settings.ITEM_POP_UP_MENU['sub_menus'])
-        for menu_item in self.menu.GetMenuItems():
-            menu_item.Enable(True)
         register_menu_call_backs(self.frame,
                                  self.menu.GetMenuItems(),
                                  settings.ITEM_POP_UP_MENU['sub_menus'],
@@ -39,6 +25,17 @@ class ListItemPopUp(object):
                                        None
                                      )
                                  )
+        self.layout_pop_menu(init=True)
+    
+    def layout_pop_menu(self, init=False):
+        """
+            Description: Renders the Item Pop-up menu in the screen
+        """
+        # Since in the default menu details
+        # the item details are ot enabled, the created menu items
+        # will be in disabled mode. So need to enable it explicitly
+        for menu_item in self.menu.GetMenuItems():
+            menu_item.Enable(True)
         if not init:
             item_count = self.frame.item_panel.list_control.GetSelectedItemCount()
             if item_count:
