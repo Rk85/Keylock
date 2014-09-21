@@ -19,7 +19,8 @@ class ItemDetailsPanel(object):
     def show_details(self, event):
         """
             Description: Called on event when the user selects/deselects
-                            a list item in the list panel
+                            a list item in the list panel and displays the
+                            other details in the detail panel
             input_param: event - Select/De-Select Event 
             input_type: Event instance
         """

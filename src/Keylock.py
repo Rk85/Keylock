@@ -2,6 +2,7 @@ import wx
 import folders_panel 
 import items_panel
 import item_details_panel
+import clip_board_timer
 import login
 import menu
 import settings
@@ -82,7 +83,7 @@ class KeyLock(wx.Frame):
 
     def layout_windows(self):
         """
-            Description: Rebnder the components into the main Frame/Window
+            Description: Renders the components into the main Frame/Window
             
         """
         # Add components to their respective splitted windows
@@ -114,10 +115,12 @@ class KeyLock(wx.Frame):
                 window_closed = self.confirm_file_save(True)
                 if self.file_name:
                     self.write_config()
+                clip_board_timer.ClipTimer().Notify()    
                 event.Veto(window_closed)
             else:
                 if self.file_name:
                     self.write_config()
+                clip_board_timer.ClipTimer().Notify()
                 event.Skip()
         except:
             event.Skip()
@@ -163,6 +166,7 @@ class KeyLock(wx.Frame):
                     self.expiry = value if value.isdigit() else self.expiry
                 else:
                     pass
+    
     def confirm_file_save(self, window_close=False):
         """
             Description: Called on event when the user tries
@@ -197,18 +201,18 @@ class KeyLock(wx.Frame):
     
     def set_key_accelarator(self):
         """
-            Description: Sets the accelarator/short -cut keys
+            Description: Sets the accelarator/short-cut keys
                         for the POP_UP windows
         """
         accel_tbl = wx.AcceleratorTable(
-            [(wx.ACCEL_CTRL,  ord('U'), settings.ITEM_COPY_USER ),
-             (wx.ACCEL_CTRL,  ord('P'), settings.ITEM_COPY_PASS ),
-             (wx.ACCEL_CTRL,  ord('E'), settings.ITEM_EDIT_ID ),
-             (wx.ACCEL_CTRL,  ord('D'), settings.ITEM_DELETE_ID ),
-             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('N'), settings.FOLDER_ADD_ID ),
-             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('D'), settings.FOLDER_DELETE_ID ),
+            [(wx.ACCEL_CTRL,  ord('U'), settings.ITEM_COPY_USER),
+             (wx.ACCEL_CTRL,  ord('P'), settings.ITEM_COPY_PASS),
+             (wx.ACCEL_CTRL,  ord('E'), settings.ITEM_EDIT_ID),
+             (wx.ACCEL_CTRL,  ord('D'), settings.ITEM_DELETE_ID),
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('N'), settings.FOLDER_ADD_ID),
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('D'), settings.FOLDER_DELETE_ID),
              (wx.ACCEL_CTRL,  ord('T'), settings.FOLDER_ADD_ITEM_ID ),
-             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('E'), settings.ITEM_EXPIRY_TIME )
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('E'), settings.ITEM_EXPIRY_TIME)
              ]
         )
         self.SetAcceleratorTable(accel_tbl)

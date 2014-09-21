@@ -75,8 +75,7 @@ class ViewMenu(object):
     
     def view_about_info(self, event):
         """
-            Description: Allows the user to change the font on 
-                         the editor
+            Description: Display the Application detail window
             input_param: event - Menu Event 
             input_type: Event instance
 
@@ -101,11 +100,3 @@ See the GNU General Public License for more details."""
         info.SetLicence(licence)
         info.AddDeveloper('Radhakrishnan Raji')
         wx.AboutBox(info)
-
-    def resize_frame(self):
-        """
-            Description: When user Toggle the status/tool bar and
-                    resizes the window between toggle, then the
-                    status/tool bar is not shown properly in the window
-        """
-        self.frame.SetSize(self.frame.GetSize()-(1,0))

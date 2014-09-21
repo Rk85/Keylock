@@ -64,7 +64,7 @@ class Folders(object):
     
     def setSelect(self, event):
         """
-            Description: Called on every mounse right click event
+            Description: Called on every mouse right click event
                             and selects the item
             input_param: event - Mouse Right Click Event 
             input_type: Event instance
@@ -221,7 +221,7 @@ class Folders(object):
         
     def layout_folders(self):
         """
-            Description: Retrievs the details of all the
+            Description: renders the details of all the
                          available Folders/Groups
             
         """

@@ -24,7 +24,7 @@ class FileMenu(object):
         """
             Description: Find whether the user has provided the 
                          file name to access on 
-            return_param: userProvidedFilename - user selected the file ot not
+            return_param: userProvidedFilename - user selected the file or not
             return_type: Boolean
             
         """
@@ -44,8 +44,7 @@ class FileMenu(object):
 
     def new_file(self, event):
         """
-            Description: Clears previous content from editor 
-                         and creats new file
+            Description: creats new file with default folders
             input_param: event - Create Event 
             input_type: Event instance
 
@@ -67,7 +66,7 @@ class FileMenu(object):
     
     def open_file(self, event):
         """
-            Description: Open the selected file
+            Description: Opens the selected file and loads credentials from that
             input_param: event - Open Event 
             input_type: Event instance
             
@@ -89,7 +88,7 @@ class FileMenu(object):
     
     def save_file(self, event):
         """
-            Description: Save the text content into a file
+            Description: Saves the credential into the file
             input_param: event - Save Event 
             input_type: Event instance
             
@@ -103,7 +102,7 @@ class FileMenu(object):
     
     def save_as_file(self, event):
         """
-            Description: Save the file into different name
+            Description: Saves the credential into the different file
             input_param: event - save Event 
             input_type: Event instance
             
@@ -124,7 +123,7 @@ class FileMenu(object):
        
     def exit_program(self, event):
         """
-            Description: Exit from TextPad application
+            Description: Exit from Keylock application
             input_param: event - Exit Event 
             input_type: Event instance
             
