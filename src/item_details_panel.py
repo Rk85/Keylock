@@ -1,7 +1,7 @@
 import wx
 import settings
 
-class ItemDetailsPanel(wx.Panel):
+class ItemDetailsPanel(object):
     """
         Description: Contains Details of an Item
     """

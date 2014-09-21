@@ -12,6 +12,7 @@ ITEM_EDIT_ID = 15001
 ITEM_DELETE_ID = 15002
 ITEM_COPY_USER = 15003
 ITEM_COPY_PASS = 15004
+ITEM_EXPIRY_TIME = 15005
 
 VIEW_STATUS_BAR_ID = 30001
 VIEW_TOOL_BAR_ID = 30002
@@ -42,6 +43,17 @@ FOLDER_POP_UP_MENU = {
                 'call_back': 'delete_folder',
                 'tool_menu': True,
                 'icon_name': 'delete_folder.png'
+            },
+            {},
+            {
+                'id': ITEM_EXPIRY_TIME,
+                'name': '&Clip Board Expiry Time\tCtrl+Shift+E',
+                'help_text': 'Stores the copied item only upto this seconds',
+                'display': True,
+                'enable': True,
+                'call_back': 'update_expiry',
+                'tool_menu': True,
+                'icon_name': 'expiry_time.png'
             },
             {},
             {
@@ -104,7 +116,7 @@ ITEM_POP_UP_MENU = {
                 'tool_menu': True,
                 'icon_name': 'copy_pass.png'
             }
-        ]
+       ]
 }
 
 # menu list for the application

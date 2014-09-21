@@ -1,11 +1,13 @@
 import wx
-import folders_panel
+import folders_panel 
 import items_panel
-import details_panel
+import item_details_panel
 import login
 import menu
 import settings
 from Crypto.Cipher import AES
+import os
+import re
 
 class KeyLock(wx.Frame):
     """
@@ -47,7 +49,7 @@ class KeyLock(wx.Frame):
         # Instance for each panel/windows
         self.folder_panel = folders_panel.Folders(self)
         self.item_panel = items_panel.ItemPanel(self)
-        self.detail_panel = details_panel.ItemDetailsPanel(self)
+        self.detail_panel = item_details_panel.ItemDetailsPanel(self)
 
         menu.layout_menus(self)
         menu.layout_tool_bar(self)
@@ -109,12 +111,58 @@ class KeyLock(wx.Frame):
         """
         try:
             if not self.content_saved:
-                event.Veto(self.confirm_file_save(True))
+                window_closed = self.confirm_file_save(True)
+                if self.file_name:
+                    self.write_config()
+                event.Veto(window_closed)
             else:
+                if self.file_name:
+                    self.write_config()
                 event.Skip()
         except:
             event.Skip()
 
+    def write_config(self):
+        """
+            Description: Writes the new configurations into the file
+        """
+        aes_obj=AES.new(self.master_password,
+                                 self.mode,
+                               IV=self.iv)
+        file_content = "file|" + os.path.join(self.dir_name, self.file_name)
+        file_content = file_content + '\r\n' + "show_pass|" + str(self.item_panel.show_pass)
+        file_content = file_content + '\r\n' + "show_name|" + str(self.item_panel.show_name)
+        file_content = file_content + '\r\n' + "timer|" + str(self.expiry)
+        with open("config", 'wb') as config_file:
+            config_file.write(aes_obj.encrypt(file_content))
+
+    def read_config(self):
+        """
+            Description: Loads the old configurations into the application
+        """
+        aes_obj=AES.new(self.master_password,
+                               self.mode,
+                               IV=self.iv)
+        with open("config", 'rb') as config_file:
+            file_content = aes_obj.decrypt(config_file.read())
+            file_lines = re.split('\r\n|\n', file_content)
+        for line in file_lines:
+            if line:
+                key, value = line.split("|")
+                if key and key == 'file' and value:
+                    self.dir_name, self.file_name = os.path.split(value)
+                elif key and key == "show_pass" and value:
+                    self.item_panel.show_pass = bool(value=='True')
+                    menu_bar = self.GetMenuBar()
+                    menu_bar.FindItemById(settings.VIEW_PASS_HIDE).Check(not self.item_panel.show_pass)
+                elif key and key == 'show_name' and value:
+                    self.item_panel.show_name = bool(value=='True')
+                    menu_bar = self.GetMenuBar()
+                    menu_bar.FindItemById(settings.VIEW_USER_HIDE).Check(not self.item_panel.show_name)
+                elif key and key == 'timer' and value:
+                    self.expiry = value if value.isdigit() else self.expiry
+                else:
+                    pass
     def confirm_file_save(self, window_close=False):
         """
             Description: Called on event when the user tries
@@ -159,7 +207,8 @@ class KeyLock(wx.Frame):
              (wx.ACCEL_CTRL,  ord('D'), settings.ITEM_DELETE_ID ),
              (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('N'), settings.FOLDER_ADD_ID ),
              (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('D'), settings.FOLDER_DELETE_ID ),
-             (wx.ACCEL_CTRL,  ord('T'), settings.FOLDER_ADD_ITEM_ID )
+             (wx.ACCEL_CTRL,  ord('T'), settings.FOLDER_ADD_ITEM_ID ),
+             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT,  ord('E'), settings.ITEM_EXPIRY_TIME )
              ]
         )
         self.SetAcceleratorTable(accel_tbl)

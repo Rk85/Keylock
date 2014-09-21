@@ -2,6 +2,7 @@ import wx
 from folder_pop_menu import FolderPopUp
 import copy
 import settings
+from item_window import ItemWindow
 
 class Folders(object):
     """
@@ -38,6 +39,28 @@ class Folders(object):
         """
         self.folders_control.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.setSelect)
         self.folders_control.Bind(wx.EVT_TREE_SEL_CHANGED, self.folder_changed)
+
+    def update_expiry(self, event):
+        """
+            Description: Called whenever the user changes the
+                        Expiry time value
+            input_param: event - Menu Event 
+            input_type: Event instance
+            
+        """
+        new_timer = wx.TextEntryDialog(self.frame, "Please provide Clip Board Time",
+                                        caption="Clip Board Expiry Time")
+        if new_timer.ShowModal() == wx.ID_OK:
+            if not new_timer.GetValue().isdigit():
+                error = wx.MessageDialog(self.frame, "Timer Value should be a Digit Value",
+                                     'Timer',
+                                     wx.OK|wx.CENTRE|
+                                     wx.OK_DEFAULT|
+                                     wx.ICON_EXCLAMATION
+                                     )
+                error.ShowModal()
+            else:
+                self.frame.expiry = int(new_timer.GetValue()) * 1000
     
     def setSelect(self, event):
         """
@@ -60,20 +83,24 @@ class Folders(object):
         """
         item = self.folders_control.GetSelection()
         data = self.folders_control.GetPyData(item)
-        # TODO: Dialog for Folder add 
-        full_path = data['path'] + '/test1' if data else '/test1'
-        if full_path not in self.folder_details.keys():
-            self.folder_details[full_path]={
-                'items': [],
-                'icon_id': 0,
-                'path': full_path
-            }
-            self.path = data['path'] if data else ''
-            folder_info = {'test1':{}}
-            self.add_folders_to_tree(item, folder_info)
-            self.folders_control.Expand(item)
-            self.frame.content_saved = False
-            self.frame.set_title(self.frame.file_name)
+        new_folder = wx.TextEntryDialog(self.frame, "Please provide folder name",
+                                        caption="New Folder Name")
+        if new_folder.ShowModal() == wx.ID_OK:
+            folder_name = new_folder.GetValue()
+            if folder_name:
+                full_path = data['path'] + '/'+folder_name if data else '/' + folder_name
+                if full_path not in self.folder_details.keys():
+                    self.folder_details[full_path]={
+                        'items': [],
+                        'icon_id': 0,
+                        'path': full_path
+                    }
+                    self.path = data['path'] if data else ''
+                    folder_info = {folder_name:{}}
+                    self.add_folders_to_tree(item, folder_info)
+                    self.folders_control.Expand(item)
+                    self.frame.content_saved = False
+                    self.frame.set_title(self.frame.file_name)
     
     def delete_folder(self, event):
         """
@@ -82,15 +109,22 @@ class Folders(object):
             input_param: event - Menu Click Event 
             input_type: Event instance
         """
-        # TODO: Confirmation dialog on delete
-        item = self.folders_control.GetSelection()
-        root_item = self.folders_control.GetRootItem()
-        data = self.folders_control.GetPyData(item)
-        if item != root_item and data['path'] in self.folder_details.keys():
-            del self.folder_details[data['path']]
-            self.folders_control.Delete(item)
-            self.frame.content_saved = False
-            self.frame.set_title(self.frame.file_name)
+        delete = wx.MessageDialog(self.frame, "Do you want to delete it?",
+                                     'Folder Delete',
+                                     wx.YES_NO|
+                                     wx.CENTRE|
+                                     wx.NO_DEFAULT|
+                                     wx.ICON_EXCLAMATION
+                                     )
+        if delete.ShowModal() == wx.ID_YES:
+            item = self.folders_control.GetSelection()
+            root_item = self.folders_control.GetRootItem()
+            data = self.folders_control.GetPyData(item)
+            if item != root_item and data['path'] in self.folder_details.keys():
+                del self.folder_details[data['path']]
+                self.folders_control.Delete(item)
+                self.frame.content_saved = False
+                self.frame.set_title(self.frame.file_name)
         
     def add_new_item(self, event):
         """
@@ -103,19 +137,21 @@ class Folders(object):
         data = self.folders_control.GetPyData(folder_item)
         if data:
             list_items = data['items']
-            # TODO: Attributes Dialog for New credential item
-            new_item = {
-                    'title': 'test',
-                    'name': 'name',
-                    'password': 'password',
-                    'notes': 'notes',
+            new_item = ItemWindow(self.frame)
+            new_item.ShowModal()
+            if new_item.action == wx.ID_OK:
+                new_item = {
+                    'title': new_item.title,
+                    'name': new_item.name,
+                    'password': new_item.password,
+                    'notes': new_item.notes,
                     'folder': data['path']
                 }
-            list_items.append(new_item)
-            self.frame.item_panel.items = list_items
-            self.frame.item_panel.display_items()
-            self.frame.content_saved = False
-            self.frame.set_title(self.frame.file_name)
+                list_items.append(new_item)
+                self.frame.item_panel.items = list_items
+                self.frame.item_panel.display_items()
+                self.frame.content_saved = False
+                self.frame.set_title(self.frame.file_name)
     
     def get_default_folders(self):
         """

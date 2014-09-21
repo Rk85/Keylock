@@ -6,7 +6,7 @@ class ItemWindow(wx.Dialog):
     """
     def __init__(self, frame):
         """
-            Description: Initialize the Login Window
+            Description: Initialize the Item Window
         """
         super(ItemWindow, self).__init__(None,
                                           -1,
@@ -51,7 +51,7 @@ class ItemWindow(wx.Dialog):
 
     def register_events(self):
         """
-            Description: Register the required events for login Window
+            Description: Register the required events for Item Window
             
         """
         self.pass_toggle_check.Bind(wx.EVT_CHECKBOX,
@@ -93,7 +93,7 @@ class ItemWindow(wx.Dialog):
             
     def layout_components(self):
         """
-            Description: Render the components into the login Frame/Window
+            Description: Render the components into the Item Frame/Window
             
         """
         # Create the Sizer the Window

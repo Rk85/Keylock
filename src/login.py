@@ -25,7 +25,7 @@ class LoginDialog(wx.Dialog):
         self.ok_button = wx.Button(self, label="OK", id=wx.ID_OK)
         self.cancel_button = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         self.pass_toggle_check = wx.CheckBox(self, label="Show Normal Text")
-
+        self.ok_button.SetDefault()
         # Display the components
         self.layout_components()
         self.register_events()
@@ -70,6 +70,8 @@ class LoginDialog(wx.Dialog):
                         (self.frame.block_size - len(self.frame.master_password))
                     )
             try:
+                if os.path.isfile("config"):
+                    self.frame.read_config()
                 if os.path.isfile(os.path.join(
                                         self.frame.dir_name,
                                         self.frame.file_name

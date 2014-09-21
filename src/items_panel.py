@@ -2,10 +2,11 @@ import wx
 from Crypto.Cipher import AES
 import re
 import os
-from list_pop_menu import ListItemPopUp
-import list_pop_menu
+from item_pop_menu import ListItemPopUp
+import item_pop_menu
 import settings
 from clip_board_timer import ClipTimer
+from item_window import ItemWindow
 import settings
 
 class ItemPanel(object):
@@ -149,10 +150,21 @@ class ItemPanel(object):
         if item_index != -1:
             index = self.list_control.GetItemData(item_index)
             item_data = folder_data['items'][index]
-            # Todo: Edit Dialog to enter the details
-            self.list_control.GetItem(item_index, 1).SetText('poda')
-            self.frame.content_saved = False
-            self.frame.set_title(self.frame.file_name)
+            edit_item = ItemWindow(self.frame)
+            edit_item.title_control.SetValue(item_data.get('title'))
+            edit_item.name_control.SetValue(item_data.get('name'))
+            edit_item.password_control.SetValue(item_data.get('password'))
+            edit_item.notes_control.SetValue(item_data.get('notes'))
+            edit_item.ShowModal()
+            if edit_item.action == wx.ID_OK:
+                item_data['title'] = edit_item.title
+                item_data['name'] = edit_item.name
+                item_data['password'] = edit_item.password
+                item_data['notes'] = edit_item.notes
+                self.frame.content_saved = False
+                self.display_items()
+                self.frame.detail_panel.details.SetValue('')
+                self.frame.set_title(self.frame.file_name)
     
     def display_items(self):
         """
@@ -245,6 +257,7 @@ class ItemPanel(object):
             else:
                 file_content = pass_file.read()
                 file_lines = re.split('\r\n|\n', file_content)
+                self.frame.credential_valid = file_lines[0][:6]=='RKLOCK'
         if self.frame.credential_valid:
            self.frame.folder_panel.folder_details = {}
            for line in file_lines[1:]:
