@@ -233,6 +233,8 @@ class ItemPanel(object):
                 new_item['folder'] = ':'.join(line[1:]).strip()
             elif line[0] == 'Item Icon':
                 new_item['item_icon_id'] = ':'.join(line[1:]).strip()
+            else:
+                new_item['notes'] = new_item['notes'] + "\r\n" + ':'.join(line).strip()
         except IndexError as e:
             pass
 
@@ -262,7 +264,7 @@ class ItemPanel(object):
            self.frame.folder_panel.folder_details = {}
            for line in file_lines[1:]:
                line = line.strip('\r\n|\n').strip()
-               if not line and new_item:
+               if not line and new_item.get('folder'):
                    self.assign_new_item_to_folder(new_item)
                    new_item = {}
                elif line:

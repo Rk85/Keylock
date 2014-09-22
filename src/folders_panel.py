@@ -120,8 +120,10 @@ class Folders(object):
             item = self.folders_control.GetSelection()
             root_item = self.folders_control.GetRootItem()
             data = self.folders_control.GetPyData(item)
-            if item != root_item and data['path'] in self.folder_details.keys():
-                del self.folder_details[data['path']]
+            if item != root_item:
+                for key in self.folder_details.keys():
+                    if key.startswith(data['path']):
+                        del self.folder_details[key]
                 self.folders_control.Delete(item)
                 self.frame.content_saved = False
                 self.frame.set_title(self.frame.file_name)
