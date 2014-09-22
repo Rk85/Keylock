@@ -174,6 +174,7 @@ class ItemPanel(object):
         self.list_control.DeleteAllItems()
         for index, item in enumerate(self.items):
             row_id = self.list_control.GetItemCount()
+            print item
             self.list_control.InsertStringItem(row_id, item['title'])
             if self.show_name:
                 self.list_control.SetStringItem(row_id, 1, item['name'])
@@ -234,7 +235,7 @@ class ItemPanel(object):
             elif line[0] == 'Item Icon':
                 new_item['item_icon_id'] = ':'.join(line[1:]).strip()
             else:
-                new_item['notes'] = new_item['notes'] + "\r\n" + ':'.join(line).strip()
+                new_item['notes'] = new_item.get('notes', '') + "\r\n" + ':'.join(line).strip()
         except IndexError as e:
             pass
 
