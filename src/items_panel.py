@@ -130,7 +130,7 @@ class ItemPanel(object):
         if item_index != -1:
             index = self.list_control.GetItemData(item_index)
             self.list_control.DeleteItem(item_index)
-            del folder_data['items'][index]
+            folder_data['items'][index]['active'] = False
             self.frame.content_saved = False
             self.frame.set_title(self.frame.file_name)
             self.frame.detail_panel.details.SetValue('')
@@ -173,21 +173,21 @@ class ItemPanel(object):
         """
         self.list_control.DeleteAllItems()
         for index, item in enumerate(self.items):
-            row_id = self.list_control.GetItemCount()
-            print item
-            self.list_control.InsertStringItem(row_id, item['title'])
-            if self.show_name:
-                self.list_control.SetStringItem(row_id, 1, item['name'])
-            else:
-                self.list_control.SetStringItem(row_id, 1, '*'*len(item['name']))
-            if self.show_pass:
-                self.list_control.SetStringItem(row_id, 2, item['password'])
-            else:
-                self.list_control.SetStringItem(row_id, 2, '*'*len(item['password']))
-            self.list_control.SetItemImage(row_id, int(item.get('item_icon_id', 0)))
-            self.list_control.SetItemData(row_id, index)
-            if (row_id % 2) == 0:
-                self.list_control.SetItemBackgroundColour(row_id, '#e6f1f5')
+            if item.get('active'):
+                row_id = self.list_control.GetItemCount()
+                self.list_control.InsertStringItem(row_id, item['title'])
+                if self.show_name:
+                    self.list_control.SetStringItem(row_id, 1, item['name'])
+                else:
+                    self.list_control.SetStringItem(row_id, 1, '*'*len(item['name']))
+                if self.show_pass:
+                    self.list_control.SetStringItem(row_id, 2, item['password'])
+                else:
+                    self.list_control.SetStringItem(row_id, 2, '*'*len(item['password']))
+                self.list_control.SetItemImage(row_id, int(item.get('item_icon_id', 0)))
+                self.list_control.SetItemData(row_id, index)
+                if (row_id % 2) == 0:
+                    self.list_control.SetItemBackgroundColour(row_id, '#e6f1f5')
     
     def assign_new_item_to_folder(self, new_item):
         """
@@ -197,6 +197,7 @@ class ItemPanel(object):
             input_type: new_item - dict
             
         """
+        new_item['active'] = True
         if new_item['folder'] in self.frame.folder_panel.folder_details.keys():
             self.frame.folder_panel.folder_details[new_item['folder']]['items'].append(new_item)
         else:
@@ -287,13 +288,14 @@ class ItemPanel(object):
             for folder, folder_details in self.frame.folder_panel.folder_details.items():
                 if len( folder_details.get('items', [])) > 0:
                     for item in folder_details.get('items', []):
-                        file_content = file_content + '[' + item['title'] + ']\r\n'
-                        file_content = file_content + 'User Name: ' + item['name'] + '\r\n'
-                        file_content = file_content + 'Password: ' + item['password'] + '\r\n'
-                        file_content = file_content + 'Notes: ' + item['notes'] + '\r\n'
-                        file_content = file_content + 'Group: ' + item['folder'] + '\r\n'
-                        file_content = file_content + 'Item Icon: ' + str(item.get('item_icon_id', 0)) + '\r\n'
-                        file_content = file_content + '\r\n'
+                        if item.get('active'):
+                            file_content = file_content + '[' + item['title'] + ']\r\n'
+                            file_content = file_content + 'User Name: ' + item['name'] + '\r\n'
+                            file_content = file_content + 'Password: ' + item['password'] + '\r\n'
+                            file_content = file_content + 'Notes: ' + item['notes'] + '\r\n'
+                            file_content = file_content + 'Group: ' + item['folder'] + '\r\n'
+                            file_content = file_content + 'Item Icon: ' + str(item.get('item_icon_id', 0)) + '\r\n'
+                            file_content = file_content + '\r\n'
                 else:
                     file_content = file_content + 'Group: ' + folder + '\r\n\r\n'
 
