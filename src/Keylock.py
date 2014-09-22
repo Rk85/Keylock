@@ -163,7 +163,7 @@ class KeyLock(wx.Frame):
                     menu_bar = self.GetMenuBar()
                     menu_bar.FindItemById(settings.VIEW_USER_HIDE).Check(not self.item_panel.show_name)
                 elif key and key == 'timer' and value:
-                    self.expiry = value if value.isdigit() else self.expiry
+                    self.expiry = int(value) if value.isdigit() else self.expiry
                 else:
                     pass
     
