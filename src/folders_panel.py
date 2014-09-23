@@ -147,7 +147,8 @@ class Folders(object):
                     'name': new_item.name,
                     'password': new_item.password,
                     'notes': new_item.notes,
-                    'folder': data['path']
+                    'folder': data['path'],
+                    'active': True
                 }
                 list_items.append(new_item)
                 self.frame.item_panel.items = list_items
