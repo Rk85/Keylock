@@ -17,9 +17,9 @@ class Folders(object):
         self.icon_name = 'folder.png'
         self.folder_details = self.get_default_folders()
         self.folders_control = wx.TreeCtrl(self.frame.content_splitter,
-                                -1,
-                                style=wx.TR_HAS_BUTTONS|
-                                wx.TR_DEFAULT_STYLE
+                                wx.ID_ANY,
+                                wx.DefaultPosition, wx.DefaultSize
+                                #style=wx.TR_HAS_BUTTONS
                                 )
         self.image_list = wx.ImageList(width=22, height=22)
         self.image_list.Add(wx.Bitmap(
@@ -141,6 +141,7 @@ class Folders(object):
             list_items = data['items']
             new_item = ItemWindow(self.frame)
             new_item.ShowModal()
+            new_item.Destroy()
             if new_item.action == wx.ID_OK:
                 new_item = {
                     'title': new_item.title,
@@ -234,7 +235,9 @@ class Folders(object):
             for directory in item.split('/'):
                 if directory:
                     temp_value = temp_value.setdefault(directory, {})
-        root = self.folders_control.AddRoot('Folders',
+        root = self.folders_control.GetRootItem()
+        if not root:
+           root = self.folders_control.AddRoot('Folders',
                                             image=self.folder_details.get(
                                                 self.path,{}
                                             ).get('icon_id', 0)

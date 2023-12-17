@@ -26,6 +26,7 @@ class ItemPanel(object):
         self.list_control = wx.ListCtrl(self.frame.content_splitter,
                                    style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
         self.set_columns()
+        #self.list_control.SetItemBackgroundColour(wx.BLACK)
         self.image_list = wx.ImageList(width=10, height=10)
         self.image_list.Add(wx.Bitmap(self.frame.icon_dir+self.icon_name,
                                       type=wx.BITMAP_TYPE_PNG)
@@ -89,7 +90,7 @@ class ItemPanel(object):
             wx.TheClipboard.Close()
             self.timer = ClipTimer()
             self.timer.Start(self.frame.expiry, oneShot=True)
-    
+
     def show_pop_menu(self, event):
         """
             Description: Called on every mouse right click event
@@ -136,7 +137,7 @@ class ItemPanel(object):
             self.frame.detail_panel.details.SetValue('')
             self.frame.detail_panel.enable = False
             self.frame.detail_panel.set_menu_state()
-    
+
     def edit_item(self, event):
         """
             Description: Called on event when the user click Edit
@@ -155,8 +156,7 @@ class ItemPanel(object):
             edit_item.name_control.SetValue(item_data.get('name'))
             edit_item.password_control.SetValue(item_data.get('password'))
             edit_item.notes_control.SetValue(item_data.get('notes'))
-            edit_item.ShowModal()
-            if edit_item.action == wx.ID_OK:
+            if edit_item.ShowModal() == wx.ID_OK:
                 item_data['title'] = edit_item.title
                 item_data['name'] = edit_item.name
                 item_data['password'] = edit_item.password
@@ -165,7 +165,7 @@ class ItemPanel(object):
                 self.display_items()
                 self.frame.detail_panel.details.SetValue('')
                 self.frame.set_title(self.frame.file_name)
-    
+            edit_item.Destroy()
     def display_items(self):
         """
             Description: Displays the list of credential items on the panel
@@ -187,7 +187,7 @@ class ItemPanel(object):
                 self.list_control.SetItemImage(row_id, int(item.get('item_icon_id', 0)))
                 self.list_control.SetItemData(row_id, index)
                 if (row_id % 2) == 0:
-                    self.list_control.SetItemBackgroundColour(row_id, '#e6f1f5')
+                    self.list_control.SetItemBackgroundColour(row_id, wx.RED)
     
     def assign_new_item_to_folder(self, new_item):
         """
@@ -252,10 +252,11 @@ class ItemPanel(object):
         new_item = {}
         with open(os.path.join(self.frame.dir_name, self.frame.file_name), 'rb') as pass_file:
             if ecrypted_file:
-               aes_obj=AES.new(self.frame.master_password,
+               aes_obj=AES.new(self.frame.master_password.encode("utf8"),
                                self.frame.mode,
-                               IV=self.frame.iv)
+                               IV=self.frame.iv.encode("utf8"))
                file_content = aes_obj.decrypt(pass_file.read())
+               file_content = file_content.decode("utf8")
                file_lines = re.split('\r\n|\n', file_content)
                self.frame.credential_valid = file_lines[0][:6]=='RKLOCK'
             else:
@@ -301,12 +302,12 @@ class ItemPanel(object):
 
             secret_key = secret_key + '\r\n'
             if encrypted_file and self.frame.master_password and file_content:
-                aes_obj=AES.new(self.frame.master_password,
+                aes_obj=AES.new(self.frame.master_password.encode("utf8"),
                                self.frame.mode,
-                               IV=self.frame.iv)
+                               IV=self.frame.iv.encode("utf8"))
                 with open(os.path.join(self.frame.dir_name, self.frame.file_name), 'wb') as pass_file:
                     total_contet = secret_key+file_content
-                    pass_file.write(aes_obj.encrypt(total_contet))
+                    pass_file.write(aes_obj.encrypt(total_contet.encode("utf8")))
         except Exception as e:
-            print e
+            print(e)
             pass

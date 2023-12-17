@@ -12,7 +12,7 @@ class LoginDialog(wx.Dialog):
         super(LoginDialog, self).__init__(None,
                                           -1,
                                           "Enter Master Key",
-                                          size=(300, 150)
+                                          size=(600, 300)
                                           )
         # Create login Window components
         self.frame = frame
@@ -88,12 +88,12 @@ class LoginDialog(wx.Dialog):
                 self.frame.item_panel.items = []
                 self.frame.folder_panel.layout_folders()
                 self.frame.credential_valid = False
-            self.Destroy()
+            self.EndModal(wx.ID_OK)
             event.Skip()
         if event.GetId() == wx.ID_CANCEL:
             self.frame.folder_panel.layout_folders()
             self.frame.item_panel.display_items()
-            self.Destroy()
+            self.EndModal(wx.ID_CANCEL)
             event.Skip()
             
     def layout_components(self):

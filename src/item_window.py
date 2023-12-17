@@ -8,7 +8,7 @@ class ItemWindow(wx.Dialog):
         """
             Description: Initialize the Item Window
         """
-        super(ItemWindow, self).__init__(None,
+        super(ItemWindow, self).__init__(frame,
                                           -1,
                                           "Item Details",
                                           size=(400, 350)
@@ -84,12 +84,12 @@ class ItemWindow(wx.Dialog):
                 self.password = self.password_control.GetValue() if self.password_control.IsShown() else self.no_password_control.GetValue()
                 self.notes = self.notes_control.GetValue()
                 self.action = wx.ID_OK
-                self.Destroy()
                 event.Skip()
+                self.EndModal(wx.ID_OK)
         if event.GetId() == wx.ID_CANCEL:
             self.action = wx.ID_CANCEL
-            self.Destroy()
             event.Skip()
+            self.EndModal(wx.ID_CANCEL)
             
     def layout_components(self):
         """

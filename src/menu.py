@@ -1,6 +1,7 @@
 import wx
 import os
 import settings
+import random
 
 def layout_menus(frame):
     """
@@ -50,10 +51,11 @@ def create_sub_menus(frame,
     """
     # Traverse the submenu items and append it to main menu
     # Assign event call back funtions for each menu item 
-    for sub_menu_item in sub_menu_list:
+    for index, sub_menu_item in enumerate(sub_menu_list):
         if not sub_menu_item:
             menu.AppendSeparator()
         else:
+            #sub_menu_item['id'] = index + random.randint(0, 32765)
             menu_item = wx.MenuItem(menu,
                           sub_menu_item['id'],
                           sub_menu_item['name'],

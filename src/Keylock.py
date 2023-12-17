@@ -32,7 +32,7 @@ class KeyLock(wx.Frame):
         self.content_saved = True
         self.icon_dir = 'icons/'
         self.expiry = 30000
- 
+
         # Split the main window into many sub-windows
         self.frame_splitter = wx.SplitterWindow(self, -1,
                                                 style=wx.SP_3D
@@ -65,13 +65,14 @@ class KeyLock(wx.Frame):
         password.Centre()
         if password.ShowModal() == wx.ID_OK and not self.credential_valid:
             error = wx.MessageDialog(self, "Invalid/Wrong Password",
-                                     'Keylock',
-                                     wx.OK|wx.CENTRE|
+                                    'Keylock',
+                                    wx.OK|wx.CENTRE|
                                      wx.OK_DEFAULT|
                                      wx.ICON_EXCLAMATION
                                      )
             error.ShowModal()
         
+        password.Destroy()
         self.SetIcon(wx.Icon(self.icon_dir + 'short_icon.ico', 
                              wx.BITMAP_TYPE_ICO)
                     )
@@ -129,39 +130,41 @@ class KeyLock(wx.Frame):
         """
             Description: Writes the new configurations into the file
         """
-        aes_obj=AES.new(self.master_password,
+        aes_obj=AES.new(self.master_password.encode("utf8"),
                                  self.mode,
-                               IV=self.iv)
+                               IV=self.iv.encode("utf8"))
         file_content = "file|" + os.path.join(self.dir_name, self.file_name)
         file_content = file_content + '\r\n' + "show_pass|" + str(self.item_panel.show_pass)
         file_content = file_content + '\r\n' + "show_name|" + str(self.item_panel.show_name)
         file_content = file_content + '\r\n' + "timer|" + str(self.expiry)
         with open("config", 'wb') as config_file:
-            config_file.write(aes_obj.encrypt(file_content))
+            config_file.write(aes_obj.encrypt(file_content.encode("utf8")))
 
     def read_config(self):
         """
             Description: Loads the old configurations into the application
         """
-        aes_obj=AES.new(self.master_password,
+        aes_obj=AES.new(self.master_password.encode("utf8"),
                                self.mode,
-                               IV=self.iv)
+                               IV=self.iv.encode("utf8"))
         with open("config", 'rb') as config_file:
             file_content = aes_obj.decrypt(config_file.read())
+            file_content = file_content.decode("utf8")
             file_lines = re.split('\r\n|\n', file_content)
         for line in file_lines:
             if line:
+                print(line.split("|"))
                 key, value = line.split("|")
                 if key and key == 'file' and value:
                     self.dir_name, self.file_name = os.path.split(value)
                 elif key and key == "show_pass" and value:
                     self.item_panel.show_pass = bool(value=='True')
                     menu_bar = self.GetMenuBar()
-                    menu_bar.FindItemById(settings.VIEW_PASS_HIDE).Check(not self.item_panel.show_pass)
+                    #menu_bar.FindItemById(settings.VIEW_PASS_HIDE).Check(not self.item_panel.show_pass)
                 elif key and key == 'show_name' and value:
                     self.item_panel.show_name = bool(value=='True')
                     menu_bar = self.GetMenuBar()
-                    menu_bar.FindItemById(settings.VIEW_USER_HIDE).Check(not self.item_panel.show_name)
+                    #menu_bar.FindItemById(settings.VIEW_USER_HIDE).Check(not self.item_panel.show_name)
                 elif key and key == 'timer' and value:
                     self.expiry = int(value) if value.isdigit() else self.expiry
                 else:
@@ -227,7 +230,6 @@ class KeyLock(wx.Frame):
         if not self.content_saved:
             title = title + '*'
         self.SetTitle('Keylock - %s'%title)
-    
         
 if __name__ == '__main__':
     app = wx.App()
